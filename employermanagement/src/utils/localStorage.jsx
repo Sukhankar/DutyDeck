@@ -2,7 +2,7 @@ const employees = [
   {
     id: 1,
     email: "employee1@example.com",
-    password: "123",
+    password: "12345678",
     tasks: [
       {
         title: "Prepare weekly report",
@@ -220,7 +220,7 @@ const admin = [
   {
     id: 100,
     email: "admin@example.com",
-    password: "123"
+    password: "12345678"
   }
 ];
 

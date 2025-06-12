@@ -1,16 +1,19 @@
 import React from 'react'
 
-const stats = [
-  { count: 0, label: "New task", bg: "bg-red-500", text: "text-white" },
-  { count: 3, label: "Completed task", bg: "bg-green-300", text: "text-gray-900" },
-  { count: 0, label: "In Progress", bg: "bg-blue-500", text: "text-white" },
-  { count: 0, label: "Pending", bg: "bg-yellow-500", text: "text-gray-900" }
-]
+const Tasknumber = ({ stats }) => {
+  // Example fallback if no stats prop is provided
+  const defaultStats = [
+    { count: 0, label: "New task", bg: "bg-red-500", text: "text-white" },
+    { count: 0, label: "Completed task", bg: "bg-green-300", text: "text-gray-900" },
+    { count: 0, label: "In Progress", bg: "bg-blue-500", text: "text-white" },
+    { count: 0, label: "Pending", bg: "bg-yellow-500", text: "text-gray-900" }
+  ];
 
-const Tasknumber = () => {
+  const displayStats = stats && Array.isArray(stats) ? stats : defaultStats;
+
   return (
     <div className="w-full flex flex-wrap justify-center gap-4 mt-10 bg-gray-800 p-4 rounded-lg shadow-md">
-      {stats.map((stat, idx) => (
+      {displayStats.map((stat, idx) => (
         <div
           key={idx}
           className={`
