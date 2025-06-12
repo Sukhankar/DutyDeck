@@ -1,44 +1,64 @@
 import React, { useState } from 'react'
 
-const CreateTask = ({ onTaskCreate }) => {
+const CreateTask = ({ onTaskCreate, employees = [] }) => {
   const [title, setTitle] = useState('')
   const [date, setDate] = useState('')
-  const [assignTo, setAssignTo] = useState('')
+  const [assignTo, setAssignTo] = useState([])
   const [category, setCategory] = useState('')
   const [description, setDescription] = useState('')
   const [success, setSuccess] = useState('')
   const [error, setError] = useState('')
+  const [showAssignPopup, setShowAssignPopup] = useState(false)
 
   const handleSubmit = (e) => {
     e.preventDefault()
     setError('')
     setSuccess('')
 
-    if (!title || !date || !assignTo || !category || !description) {
+    if (!title || !date || assignTo.length === 0 || !category || !description) {
       setError('All fields are required.')
       return
     }
 
-    // You can replace this with your backend/API call
+    // Create the new task object
     const newTask = {
       title,
       date,
-      assignTo,
+      assignTo, // now an array
       category,
       description,
-      status: 'To Do'
+      status: 'Pending'
     }
 
     if (onTaskCreate) {
       onTaskCreate(newTask)
+      setSuccess('Task created successfully!')
+      setTitle('')
+      setDate('')
+      setAssignTo([])
+      setCategory('')
+      setDescription('')
     }
+  }
 
-    setSuccess('Task created successfully!')
-    setTitle('')
-    setDate('')
-    setAssignTo('')
-    setCategory('')
-    setDescription('')
+  const handleAssignChange = (user) => {
+    setAssignTo(prev =>
+      prev.includes(user)
+        ? prev.filter(u => u !== user)
+        : [...prev, user]
+    )
+  }
+
+  // Select All functionality
+  const allEmployeeKeys = employees.map(emp => emp.name || emp.email)
+  const isAllSelected = assignTo.length === allEmployeeKeys.length && allEmployeeKeys.length > 0
+
+  const handleSelectAll = () => {
+    if (isAllSelected) {
+      setAssignTo([])
+    } else {
+      setAssignTo(allEmployeeKeys)
+    }
   }
 
   return (
@@ -73,13 +93,15 @@ const CreateTask = ({ onTaskCreate }) => {
                 </div>
                 <div className="flex-1">
                   <label className="block text-gray-700 font-medium mb-1">Assign to</label>
-                  <input
-                    type="text"
-                    placeholder="Enter employee name"
-                    className="w-full text-black outline-none border-2 border-gray-200 focus:border-blue-400 text-base py-2 px-4 rounded-md transition"
-                    value={assignTo}
-                    onChange={e => setAssignTo(e.target.value)}
-                  />
+                  <button
+                    type="button"
+                    className="w-full bg-white border-2 border-gray-200 text-black rounded-md py-2 px-4 transition hover:bg-blue-50"
+                    onClick={() => setShowAssignPopup(true)}
+                  >
+                    {assignTo.length === 0
+                      ? "Select employees"
+                      : `${assignTo.length} selected`}
+                  </button>
                 </div>
               </div>
               <div>
@@ -115,6 +137,60 @@ const CreateTask = ({ onTaskCreate }) => {
           </form>
         </div>
       </div>
+
+      {/* Assign To Popup */}
+      {showAssignPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.15)" }}>
+          <div className="bg-white rounded-xl p-8 max-w-lg w-full shadow-2xl relative">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-gray-800">Select Employees</h3>
+              <button
+                className="text-gray-500 hover:text-red-600 text-2xl font-bold"
+                onClick={() => setShowAssignPopup(false)}
+                aria-label="Close"
+              >
+                &times;
+              </button>
+            </div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="flex items-center gap-2 text-blue-900 font-medium cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isAllSelected}
+                  onChange={handleSelectAll}
+                />
+                Select All
+              </label>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-h-72 overflow-y-auto">
+              {employees.length === 0 && (
+                <div className="col-span-full text-gray-500 text-center">No employees found.</div>
+              )}
+              {employees.map((emp, idx) => (
+                <label
+                  key={idx}
+                  className={`flex items-center gap-2 bg-blue-50 rounded-lg px-3 py-2 cursor-pointer border border-blue-200 hover:bg-blue-100 transition`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={assignTo.includes(emp.name || emp.email)}
+                    onChange={() => handleAssignChange(emp.name || emp.email)}
+                  />
+                  <span className="text-blue-900 font-medium">{emp.name || emp.email}</span>
+                </label>
+              ))}
+            </div>
+            <div className="flex justify-end mt-6">
+              <button
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow transition"
+                onClick={() => setShowAssignPopup(false)}
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

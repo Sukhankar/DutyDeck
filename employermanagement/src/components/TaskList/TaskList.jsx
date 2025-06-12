@@ -1,50 +1,43 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
-const tasks = [
-  {
-    status: "To Do",
-    date: "11 June 2025",
-    title: "Do the given task",
-    desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.",
-    color: "bg-yellow-300",
-    statusColor: "bg-red-600"
-  },
-  {
-    status: "To Do",
-    date: "12 June 2025",
-    title: "Complete the report",
-    desc: "Finish the quarterly report and submit to management.",
-    color: "bg-yellow-300",
-    statusColor: "bg-red-600"
-  },
-  {
-    status: "To Do",
-    date: "13 June 2025",
-    title: "Review submissions",
-    desc: "Check all employee submissions for accuracy.",
-    color: "bg-yellow-300",
-    statusColor: "bg-red-600"
-  },
-  {
-    status: "To Do",
-    date: "14 June 2025",
-    title: "Prepare meeting",
-    desc: "Organize agenda and materials for the next meeting.",
-    color: "bg-yellow-300",
-    statusColor: "bg-red-600"
-  },
-  {
-    status: "To Do",
-    date: "15 June 2025",
-    title: "Send emails",
-    desc: "Send follow-up emails to all clients.",
-    color: "bg-yellow-300",
-    statusColor: "bg-red-600"
-  }
+// Utility to generate a random color class for cards
+const cardColors = [
+  "bg-yellow-300",
+  "bg-blue-200",
+  "bg-green-200",
+  "bg-pink-200",
+  "bg-purple-200",
+  "bg-orange-200",
+  "bg-teal-200",
+  "bg-indigo-200"
 ]
+const statusColorMap = {
+  "Pending": "bg-red-600",
+  "To Do": "bg-yellow-600",
+  "Completed": "bg-green-600",
+  "In Progress": "bg-blue-600",
+  "Failed": "bg-gray-600"
+}
 
 const TaskList = () => {
+  const [tasks, setTasks] = useState([])
   const [selectedTask, setSelectedTask] = useState(null)
+
+  useEffect(() => {
+    // Fetch tasks from backend API
+    fetch('http://localhost:5000/api/tasks')
+      .then(res => res.json())
+      .then(data => {
+        // Assign a random color to each task for card background
+        const coloredTasks = data.map(task => ({
+          ...task,
+          color: cardColors[Math.floor(Math.random() * cardColors.length)],
+          statusColor: statusColorMap[task.status] || "bg-gray-400"
+        }))
+        setTasks(coloredTasks)
+      })
+      .catch(() => setTasks([]))
+  }, [])
 
   return (
     <>
@@ -58,9 +51,14 @@ const TaskList = () => {
         `}
         style={{ minHeight: 500 }}
       >
+        {tasks.length === 0 && (
+          <div className="col-span-full text-center text-gray-500 py-10">
+            No tasks found.
+          </div>
+        )}
         {tasks.map((task, idx) => (
           <div
-            key={idx}
+            key={task._id || idx}
             className={`
               relative w-full cursor-pointer shadow-xl rounded-2xl transition-all duration-300 ${task.color}
               ${idx !== 0 ? '-mt-16' : ''}
@@ -81,7 +79,7 @@ const TaskList = () => {
             </div>
             <div className="px-6 pb-6">
               <h2 className="mt-4 text-xl font-bold text-gray-800">{task.title}</h2>
-              <p className="text-sm text-gray-600 mt-2">{task.desc}</p>
+              <p className="text-sm text-gray-600 mt-2">{task.description}</p>
             </div>
           </div>
         ))}
@@ -105,7 +103,7 @@ const TaskList = () => {
               <h4 className="text-xs text-gray-600">{selectedTask.date}</h4>
             </div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">{selectedTask.title}</h2>
-            <p className="text-base text-gray-700">{selectedTask.desc}</p>
+            <p className="text-base text-gray-700">{selectedTask.description}</p>
           </div>
           <style>
             {`
