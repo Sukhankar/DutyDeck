@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import Login from './components/Auth/login.jsx'
+import Login from './components/Auth/Login.jsx'
 import EmployeeDashboard from './components/Dashboard/EmployeeDashboard.jsx'
 import AdminDashboard from './components/Dashboard/AdminDashboard.jsx'
 import { AuthContext } from './context/AuthProvider.jsx'
@@ -23,7 +23,7 @@ function App() {
     }, [authData]);
 
     const handleLogin = (email, password) => {
-        if (email === 'admin@me.com' && password === '12345678') {
+        if (email === 'admin@example.com' && password === '12345678') {
             setUser('admin');
             setUserName('Admin');
             localStorage.setItem('loggedInUser', JSON.stringify({ role: 'admin', name: 'Admin' }));
@@ -33,8 +33,12 @@ function App() {
         ) {
             const employee = authData.employees.find((e) => e.email === email && e.password === password);
             setUser('employee');
-            setUserName(employee.name || 'Employee');
-            localStorage.setItem('loggedInUser', JSON.stringify({ role: 'employee', name: employee.name || 'Employee' }));
+            setUserName(employee.email.split('@')[0] || 'Employee');
+            localStorage.setItem('loggedInUser', JSON.stringify({ 
+                role: 'employee', 
+                name: employee.email.split('@')[0] || 'Employee',
+                id: employee.id
+            }));
         } else {
             alert("Invalid credentials");
         }
@@ -45,7 +49,14 @@ function App() {
             authData &&
             !authData.employees.find((e) => e.email === email)
         ) {
-            authData.addEmployee({ email, password, name });
+            const newEmployee = {
+                id: authData.employees.length + 1,
+                email,
+                password,
+                tasks: []
+            };
+            authData.employees.push(newEmployee);
+            localStorage.setItem('employees', JSON.stringify(authData.employees));
             alert("Registration successful! Please login.");
         } else {
             alert("User already exists.");

@@ -3,9 +3,16 @@ import React from 'react'
 const Header = ({ userName = "Employee", onLogout }) => {
   // Handle logout and redirect to login page
   const handleLogoutClick = () => {
+    // Remove logged in user data from localStorage
+    localStorage.removeItem('loggedInUser');
+    
+    // Call the parent logout handler if provided
     if (onLogout) {
       onLogout();
     }
+    
+    // Force page refresh to clear any state
+    window.location.reload();
   };
 
   return (
