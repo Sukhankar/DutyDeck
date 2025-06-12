@@ -1,0 +1,50 @@
+# Node.js
+node_modules/
+.env
+.env.*          # if you're using multiple envs like .env.development
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Logs
+logs/
+*.log
+
+# Build output
+dist/
+build/
+
+# OS/System files
+.DS_Store
+Thumbs.db
+
+# Vercel / Netlify / Deployment
+.vercel/
+.netlify/
+*.local
+
+# IDE/Editor settings
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Firebase
+.firebase/
+.firebaserc
+
+# Mac/Linux file
+*.swp
+*.bak
+
+# Optional:
+# If you use uploads or temp folders for local dev
+uploads/
+tmp/
