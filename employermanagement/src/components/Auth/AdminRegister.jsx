@@ -56,94 +56,52 @@ const AdminRegister = ({ handleAdminRegister, onBackToLogin }) => {
         )}
 
         <form onSubmit={handleRegister} className="flex flex-col gap-6" autoComplete="off">
-          <div className="flex flex-col gap-2">
-            <label htmlFor="name" className="text-blue-100 font-medium">
-              Full Name
+          <div className="mb-4">
+            <label className="block text-white font-medium mb-1">
+              Name <span className="text-red-500">*</span>
             </label>
             <input
-              id="name"
               type="text"
+              className={`bg-white/20 w-full border border-white/30 text-blue-100 placeholder-blue-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-400 transition text-lg shadow-inner`}
               value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="bg-white/20 border border-white/30 text-blue-100 placeholder-blue-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-400 transition text-lg shadow-inner"
-              placeholder="Enter your full name"
-              required
-              spellCheck={false}
+              onChange={e => setName(e.target.value)}
+              placeholder="Enter your name"
             />
           </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="email" className="text-blue-100 font-medium">
-              Email Address
+          <div className="mb-4">
+            <label className="block text-white font-medium mb-1">
+              Email <span className="text-red-500">*</span>
             </label>
             <input
-              id="email"
               type="email"
+              className={`bg-white/20 w-full border border-white/30 text-blue-100 placeholder-blue-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-400 transition text-lg shadow-inner`}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="bg-white/20 border border-white/30 text-blue-100 placeholder-blue-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-400 transition text-lg shadow-inner"
+              onChange={e => setEmail(e.target.value)}
               placeholder="Enter your email"
-              required
-              spellCheck={false}
-              inputMode="email"
-              pattern="^[^@\s]+@[^@\s]+\.[^@\s]+$"
             />
           </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="organization" className="text-blue-100 font-medium">
-              Organization
+          <div className="mb-4">
+            <label className="block text-white font-medium mb-1">
+              Password <span className="text-red-500">*</span>
             </label>
             <input
-              id="organization"
-              type="text"
-              value={organization}
-              onChange={(e) => setOrganization(e.target.value)}
-              className="bg-white/20 border border-white/30 text-blue-100 placeholder-blue-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-400 transition text-lg shadow-inner"
-              placeholder="Enter your organization"
-              required
-              spellCheck={false}
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="password" className="text-blue-100 font-medium">
-              Create Password
-            </label>
-            <input
-              id="password"
               type="password"
+              className={`bg-white/20 w-full border border-white/30 text-blue-100 placeholder-blue-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-400 transition text-lg shadow-inner`}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="bg-white/20 border border-white/30 text-blue-100 placeholder-blue-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-400 transition text-lg shadow-inner"
-              placeholder="Create a password"
-              required
-              minLength={8}
-              maxLength={64}
-              autoCapitalize="off"
-              autoCorrect="off"
-              onCopy={e => e.preventDefault()}
-              onPaste={e => e.preventDefault()}
+              onChange={e => setPassword(e.target.value)}
+              placeholder="Enter your password"
             />
-            <span className="text-xs text-blue-200/80 mt-1">
-              Password must be at least 8 characters.
-            </span>
           </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="confirmPassword" className="text-blue-100 font-medium">
-              Confirm Password
+          <div className="mb-6">
+            <label className="block text-white font-medium mb-1">
+              Organization <span className="text-red-500">*</span>
             </label>
             <input
-              id="confirmPassword"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="bg-white/20 border border-white/30 text-blue-100 placeholder-blue-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-400 transition text-lg shadow-inner"
-              placeholder="Confirm your password"
-              required
-              minLength={8}
-              maxLength={64}
-              autoCapitalize="off"
-              autoCorrect="off"
-              onCopy={e => e.preventDefault()}
-              onPaste={e => e.preventDefault()}
+              type="text"
+              className={`bg-white/20 w-full border border-white/30 text-blue-100 placeholder-blue-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-400 transition text-lg shadow-inner`}
+              value={organization}
+              onChange={e => setOrganization(e.target.value)}
+              placeholder="Enter your organization name"
             />
           </div>
           <button
