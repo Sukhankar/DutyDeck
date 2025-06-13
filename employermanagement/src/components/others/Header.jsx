@@ -1,18 +1,22 @@
-import React from 'react'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Header = ({ userName = "Employee", onLogout }) => {
-  // Handle logout and redirect to login page
+  const navigate = useNavigate();
+
   const handleLogoutClick = () => {
-    // Remove logged in user data from localStorage
-    localStorage.removeItem('loggedInUser');
-    
-    // Call the parent logout handler if provided
-    if (onLogout) {
-      onLogout();
-    }
-    
-    // Force page refresh to clear any state
-    window.location.reload();
+    // Clear token from localStorage (or cookie if using that)
+    localStorage.removeItem('token'); // or your key name like 'user-token'
+
+    // Optional: clear more data if stored
+    localStorage.removeItem('user');
+    sessionStorage.clear();
+
+    // Optional: callback if passed
+    if (onLogout) onLogout();
+
+    // Redirect to login page
+    navigate('/');
   };
 
   return (
@@ -33,7 +37,7 @@ const Header = ({ userName = "Employee", onLogout }) => {
         Log out
       </button>
     </header>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

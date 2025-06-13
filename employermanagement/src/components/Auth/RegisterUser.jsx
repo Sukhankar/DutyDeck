@@ -1,37 +1,49 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import API from "../../api";
+import { useNavigate } from "react-router-dom";
 
-export default function Login() {
-  const [form, setForm] = useState({ email: "", password: "" });
+export default function RegisterUser() {
+  const [form, setForm] = useState({ name: "", email: "", password: "", organization: "" });
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await API.post("/auth/login", form);
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('role', data.role);
-      if (data.role === "admin") navigate("/admin");
-      else navigate("/user");
+      await API.post("/auth/register-user", form);
+      alert("User registered successfully!");
+      navigate('/login');
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed. Please try again.');
+      setError(err.response?.data?.error || 'Registration failed. Please try again.');
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-800">
       <div className="backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl rounded-3xl p-8 w-full max-w-md mx-4 glass-card">
-        <form onSubmit={handleLogin} className="flex flex-col gap-6">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <h2 className="text-3xl font-extrabold text-center mb-2 text-blue-200 tracking-tight drop-shadow">
-            Login
+            User Registration
           </h2>
           {error && (
             <div className="bg-red-500/80 text-white rounded-lg px-4 py-2 text-center text-sm font-semibold shadow">
               {error}
             </div>
           )}
+          <div className="flex flex-col gap-2">
+            <label htmlFor="name" className="text-blue-100 font-medium">
+              Name
+            </label>
+            <input
+              id="name"
+              type="text"
+              required
+              value={form.name}
+              onChange={e => setForm({ ...form, name: e.target.value })}
+              className="bg-white/20 border border-white/30 text-blue-100 placeholder-blue-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-400 transition text-lg shadow-inner"
+              placeholder="Enter your name"
+            />
+          </div>
           <div className="flex flex-col gap-2">
             <label htmlFor="email" className="text-blue-100 font-medium">
               Email
@@ -60,30 +72,26 @@ export default function Login() {
               placeholder="Enter your password"
             />
           </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="organization" className="text-blue-100 font-medium">
+              Organization
+            </label>
+            <input
+              id="organization"
+              type="text"
+              required
+              value={form.organization}
+              onChange={e => setForm({ ...form, organization: e.target.value })}
+              className="bg-white/20 border border-white/30 text-blue-100 placeholder-blue-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-400 transition text-lg shadow-inner"
+              placeholder="Enter your organization"
+            />
+          </div>
           <button
             type="submit"
             className="bg-blue-600/80 hover:bg-blue-700/90 text-white font-bold py-3 rounded-xl shadow-lg transition text-lg tracking-wide mt-2"
           >
-            Login
+            Register User
           </button>
-          <div className="text-center text-blue-100">
-            Don't have an account?{' '}
-            <button
-              type="button"
-              onClick={() => navigate('/register-user')}
-              className="text-blue-300 hover:text-blue-400 font-semibold underline"
-            >
-              Register as User
-            </button>
-            {' '}or{' '}
-            <button
-              type="button"
-              onClick={() => navigate('/register-admin')}
-              className="text-blue-300 hover:text-blue-400 font-semibold underline"
-            >
-              Register as Admin
-            </button>
-          </div>
         </form>
       </div>
     </div>
