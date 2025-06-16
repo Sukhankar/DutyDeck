@@ -1,21 +1,21 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Header = ({ userName = "Employee", onLogout }) => {
+const Header = ({ onLogout }) => {
   const navigate = useNavigate();
 
-  const handleLogoutClick = () => {
-    // Clear token from localStorage (or cookie if using that)
-    localStorage.removeItem('token'); // or your key name like 'user-token'
+  // Get logged in user from localStorage
+  const loggedInUser = JSON.parse(localStorage.getItem('user'));
+  const loggedInEmail = loggedInUser?.email || "employee@company.com";
+  const emailPrefix = loggedInEmail.split('@')[0]; // Get part before @
 
-    // Optional: clear more data if stored
+  const handleLogoutClick = () => {
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
     sessionStorage.clear();
 
-    // Optional: callback if passed
     if (onLogout) onLogout();
 
-    // Redirect to login page
     navigate('/');
   };
 
@@ -26,7 +26,7 @@ const Header = ({ userName = "Employee", onLogout }) => {
           Hello,
           <br />
           <span className="text-2xl sm:text-3xl font-bold text-blue-300 flex items-center gap-2">
-            {userName} <span role="img" aria-label="wave">👋</span>
+            {emailPrefix} <span role="img" aria-label="wave">👋</span>
           </span>
         </h1>
       </div>

@@ -7,6 +7,7 @@ const taskSchema = new mongoose.Schema({
   category: { type: String, required: true },
   description: { type: String, required: true },
   status: { type: String, enum: ['Pending', 'In Progress', 'Completed'], default: 'Pending' },
+  seenBy: [{ type: String }] // Array of user emails that have seen the task
 }, { timestamps: true });
 
 export default mongoose.model('Task', taskSchema);

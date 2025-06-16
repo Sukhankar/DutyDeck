@@ -16,6 +16,7 @@ export default function Login() {
         // Save token and user info to localStorage
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify({
+          name: res.data.name,
           email: form.email,
           role: res.data.role
         }));

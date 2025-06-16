@@ -3,18 +3,16 @@ import CreateTask from '../others/CreateTask'
 import AllTask from '../others/AllTask'
 import Header from '../others/Header'
 import Footer from '../others/Footer'
+import UserInsights from "../others/UserInsights"
 
 const AdminDashboard = () => {
-  const userName = "John Doe"; // This should come from your auth logic
-  const handleLogout = () => {
-    // Your logout logic here
-  }
 
   return (
     <div>
-        <Header userName={userName} onLogout={handleLogout} />
+        <Header/>
         <CreateTask />
         <AllTask />
+        <UserInsights />
         <Footer />
     </div>
   )
