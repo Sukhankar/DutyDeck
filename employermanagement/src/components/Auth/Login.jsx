@@ -12,8 +12,15 @@ export default function Login() {
     e.preventDefault();
     try {
       if (view === "login") {
-        const { data } = await API.post("/auth/login", form);
-        if (data.role === "admin") navigate("/admin");
+        const res = await API.post("/auth/login", form);
+        // Save token and user info to localStorage
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify({
+          email: form.email,
+          role: res.data.role
+        }));
+        
+        if (res.data.role === "admin") navigate("/admin");
         else navigate("/user");
       } else if (view === "forgot") {
         // Handle forgot password logic

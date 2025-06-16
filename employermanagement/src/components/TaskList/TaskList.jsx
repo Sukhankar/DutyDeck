@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import API from '../../api'
 
 // Utility to generate a random color class for cards
 const cardColors = [
@@ -22,22 +23,41 @@ const statusColorMap = {
 const TaskList = () => {
   const [tasks, setTasks] = useState([])
   const [selectedTask, setSelectedTask] = useState(null)
+  const user = JSON.parse(localStorage.getItem("user"))
+
+  // Validate user email before fetching tasks
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  }
 
   useEffect(() => {
-    // Fetch tasks from backend API
-    fetch('http://localhost:5000/api/tasks')
-      .then(res => res.json())
-      .then(data => {
-        // Assign a random color to each task for card background
-        const coloredTasks = data.map(task => ({
+    const fetchTasks = async () => {
+      try {
+        // Validate user email before making API call
+        if (!isValidEmail(user?.email)) {
+          console.error("Invalid email format in localStorage")
+          return
+        }
+
+        const res = await API.get(`/tasks/user?email=${user.email}`)
+        const coloredTasks = res.data.map(task => ({
           ...task,
           color: cardColors[Math.floor(Math.random() * cardColors.length)],
-          statusColor: statusColorMap[task.status] || "bg-gray-400"
+          statusColor: statusColorMap[task.status] || "bg-gray-400",
+          // Ensure assignTo contains only valid emails
+          assignTo: task.assignTo.filter(email => isValidEmail(email))
         }))
         setTasks(coloredTasks)
-      })
-      .catch(() => setTasks([]))
-  }, [])
+      } catch (err) {
+        console.error("Failed to fetch tasks:", err.message)
+        setTasks([])
+      }
+    }
+
+    if (user?.email && isValidEmail(user.email)) {
+      fetchTasks()
+    }
+  }, [user])
 
   return (
     <>
@@ -75,7 +95,7 @@ const TaskList = () => {
               <h3 className={`${task.statusColor} text-xs px-3 py-1 rounded text-white font-semibold shadow`}>
                 {task.status}
               </h3>
-              <h4 className="text-xs text-gray-600">{task.date}</h4>
+              <h4 className="text-xs text-gray-600">{new Date(task.date).toLocaleDateString()}</h4>
             </div>
             <div className="px-6 pb-6">
               <h2 className="mt-4 text-xl font-bold text-gray-800">{task.title}</h2>
@@ -100,7 +120,7 @@ const TaskList = () => {
               <h3 className={`${selectedTask.statusColor} text-xs px-3 py-1 rounded text-white font-semibold shadow`}>
                 {selectedTask.status}
               </h3>
-              <h4 className="text-xs text-gray-600">{selectedTask.date}</h4>
+              <h4 className="text-xs text-gray-600">{new Date(selectedTask.date).toLocaleDateString()}</h4>
             </div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">{selectedTask.title}</h2>
             <p className="text-base text-gray-700">{selectedTask.description}</p>
