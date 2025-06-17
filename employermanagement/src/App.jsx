@@ -5,6 +5,7 @@ import RegisterAdmin from "../src/components/Auth/RegisterAdmin";
 import DashboardUser from "../src/components/Dashboard/EmployeeDashboard";
 import DashboardAdmin from "../src/components/Dashboard/AdminDashboard";
 import LandingPage from "../src/components/landing/landingpage";
+import AllTaskPreview from "../src/components/others/AllTaskPreview";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/register-admin" element={<RegisterAdmin />} />
         <Route path="/user" element={<DashboardUser />} />
         <Route path="/admin" element={<DashboardAdmin />} />
+        <Route path="/all-tasks-preview" element={<AllTaskPreview />} />
       </Routes>
     </BrowserRouter>
   );
