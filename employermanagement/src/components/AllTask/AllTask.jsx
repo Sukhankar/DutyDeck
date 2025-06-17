@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import API from '../../api';
-import TaskCard from '../AllTask/TaskCardPreview';
-import TaskTable from '../AllTask/TaskTable';
-import TaskModal from '../AllTask/TaskModal';
+import TaskCard from './TaskCard';
+import TaskTable from './TaskTable';
+import TaskModal from './TaskModal';
 
 const statusOptions = [
   { label: "All", value: "" },
@@ -32,6 +32,14 @@ const AllTask = () => {
 
   useEffect(() => {
     fetchTasks();
+    
+    // Set up interval to refresh tasks every second
+    const interval = setInterval(() => {
+      fetchTasks();
+    }, 1000);
+
+    // Clean up interval on component unmount
+    return () => clearInterval(interval);
   }, []);
 
   const filteredTasks = tasks.filter(t => {

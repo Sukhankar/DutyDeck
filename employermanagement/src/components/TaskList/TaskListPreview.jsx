@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import API from '../../api'
 import { formatDistanceToNow } from 'date-fns'
-import { useNavigate } from 'react-router-dom'
 
 // Utility to generate a random color class for cards
 const cardColors = [
@@ -26,8 +25,6 @@ const TaskList = () => {
   const [tasks, setTasks] = useState([])
   const [selectedTask, setSelectedTask] = useState(null)
   const user = JSON.parse(localStorage.getItem("user"))
-  const navigate = useNavigate()
-  const cardTasks = tasks.slice(0, 8) // Only show first 8 tasks
 
   // Validate user email before fetching tasks
   const isValidEmail = (email) => {
@@ -75,11 +72,12 @@ const TaskList = () => {
         `}
         style={{ minHeight: 500 }}
       >
-        {cardTasks.length === 0 ? (
+        {tasks.length === 0 && (
           <div className="col-span-full text-center text-gray-500 py-10">
             No tasks found.
           </div>
-        ) : cardTasks.map((task, idx) => {
+        )}
+        {tasks.map((task, idx) => {
           const isDeadlinePassed = task.deadline && new Date(task.deadline) < new Date();
           return (
             <div
@@ -139,17 +137,6 @@ const TaskList = () => {
             </div>
           )
         })}
-
-        {/* Show All Card */}
-        {tasks.length > 8 && (
-          <div
-            className="bg-white rounded-xl shadow-lg p-5 border border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 transition"
-            onClick={() => navigate('/task-list-preview')}
-          >
-            <h2 className="text-lg font-semibold text-blue-600">Show All</h2>
-            <p className="text-sm text-gray-500 text-center mt-2">View all {tasks.length} tasks in detail</p>
-          </div>
-        )}
       </div>
 
       {/* Popup Modal */}

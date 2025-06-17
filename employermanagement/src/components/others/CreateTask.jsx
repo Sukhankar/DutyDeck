@@ -6,6 +6,7 @@ const CreateTask = () => {
 
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
+  const [deadline, setDeadline] = useState('');
   const [assignTo, setAssignTo] = useState([]);
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
@@ -35,6 +36,7 @@ const CreateTask = () => {
       setError('');
       setTitle('');
       setDate('');
+      setDeadline('');
       setAssignTo([]);
       setCategory('');
       setDescription('');
@@ -49,7 +51,7 @@ const CreateTask = () => {
     setError('');
     setSuccess('');
 
-    if (!title || !date || assignTo.length === 0 || !category || !description) {
+    if (!title || !date || !deadline || assignTo.length === 0 || !category || !description) {
       setError('All fields are required.');
       return;
     }
@@ -57,6 +59,7 @@ const CreateTask = () => {
     const newTask = {
       title,
       date,
+      deadline,
       assignTo,
       category,
       description,
@@ -102,25 +105,35 @@ const CreateTask = () => {
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex-1">
-                  <label className="block text-gray-700 font-medium mb-1">Date</label>
+                  <label className="block text-gray-700 font-medium mb-1">Start Date</label>
                   <input
                     type="date"
-                    className="w-full text-black outline-none border-2 border-gray-200 focus:border-blue-400 text-base py 2 px-4 rounded-md transition"
+                    className="w-full text-black outline-none border-2 border-gray-200 focus:border-blue-400 text-base py-2 px-4 rounded-md transition"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
                   />
                 </div>
 
                 <div className="flex-1">
-                  <label className="block text-gray-700 font-medium mb-1">Assign to</label>
-                  <button
-                    type="button"
-                    className="w-full bg-white border-2 border-gray-200 text-black rounded-md py-2 px-4 transition hover:bg-blue-50"
-                    onClick={() => setShowAssignPopup(true)}
-                  >
-                    {assignTo.length === 0 ? 'Select employees' : `${assignTo.length} selected`}
-                  </button>
+                  <label className="block text-gray-700 font-medium mb-1">Deadline</label>
+                  <input
+                    type="date"
+                    className="w-full text-black outline-none border-2 border-gray-200 focus:border-blue-400 text-base py-2 px-4 rounded-md transition"
+                    value={deadline}
+                    onChange={(e) => setDeadline(e.target.value)}
+                  />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-gray-700 font-medium mb-1">Assign to</label>
+                <button
+                  type="button"
+                  className="w-full bg-white border-2 border-gray-200 text-black rounded-md py-2 px-4 transition hover:bg-blue-50"
+                  onClick={() => setShowAssignPopup(true)}
+                >
+                  {assignTo.length === 0 ? 'Select employees' : `${assignTo.length} selected`}
+                </button>
               </div>
 
               <div>

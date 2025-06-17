@@ -6,6 +6,7 @@ import DashboardUser from "../src/components/Dashboard/EmployeeDashboard";
 import DashboardAdmin from "../src/components/Dashboard/AdminDashboard";
 import LandingPage from "../src/components/landing/landingpage";
 import AllTaskPreview from "../src/components/others/AllTaskPreview";
+import TaskListPreview from "../src/components/TaskList/TaskListPreview";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/user" element={<DashboardUser />} />
         <Route path="/admin" element={<DashboardAdmin />} />
         <Route path="/all-tasks-preview" element={<AllTaskPreview />} />
+        <Route path="/task-list-preview" element={<TaskListPreview />} />
       </Routes>
     </BrowserRouter>
   );

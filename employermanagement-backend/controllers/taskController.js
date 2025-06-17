@@ -1,17 +1,19 @@
+import { v4 as uuidv4 } from 'uuid';
 import User from "../models/userModel.js";
 import Task from "../models/Task.js";
 
 export const createTask = async (req, res) => {
   try {
-    const { title, date, assignTo, category, description } = req.body;
+    const { title, date, deadline, assignTo, category, description } = req.body;
 
-    if (!title || !date || !assignTo || !category || !description) {
+    if (!title || !date || !deadline || !assignTo || !category || !description) {
       return res.status(400).json({ message: "All fields are required." });
     }
 
     const newTask = new Task({
       title,
       date,
+      deadline,
       assignTo,
       category,
       description,
@@ -117,5 +119,84 @@ export const getUserInsights = async (req, res) => {
   } catch (err) {
     console.error("Error fetching user insights:", err.message);
     res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const updateTaskStatus = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    const { status } = req.body;
+
+    const updated = await Task.findByIdAndUpdate(taskId, { status }, { new: true });
+    res.status(200).json(updated);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update task status" });
+  }
+};
+
+export const updateTask = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    const updateData = req.body;
+
+    const updatedTask = await Task.findByIdAndUpdate(taskId, updateData, { new: true });
+
+    if (!updatedTask) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    res.status(200).json(updatedTask);
+  } catch (err) {
+    console.error("Error updating task:", err.message);
+    res.status(500).json({ message: "Failed to update task" });
+  }
+};
+
+export const deleteTask = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+
+    const deletedTask = await Task.findByIdAndDelete(taskId);
+
+    if (!deletedTask) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    res.status(200).json({ message: "Task deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting task:", err.message);
+    res.status(500).json({ message: "Failed to delete task" });
+  }
+};
+
+export const addQueryToTask = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    const { user, message } = req.body;
+
+    const task = await Task.findById(taskId);
+    if (!task) return res.status(404).json({ message: "Task not found" });
+
+    const newQuery = { id: uuidv4(), user, message };
+    task.queries.push(newQuery);
+    await task.save();
+
+    res.status(201).json(task.queries);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to add query" });
+  }
+};
+
+export const deleteQuery = async (req, res) => {
+  try {
+    const { taskId, queryId } = req.params;
+
+    const task = await Task.findById(taskId);
+    task.queries = task.queries.filter(q => q.id !== queryId);
+    await task.save();
+
+    res.status(200).json(task.queries);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete query" });
   }
 };

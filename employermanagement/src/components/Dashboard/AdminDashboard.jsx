@@ -1,6 +1,6 @@
 import React from 'react'
 import CreateTask from '../others/CreateTask'
-import AllTask from '../others/AllTask'
+import AllTask from '../AllTask/AllTask'
 import Header from '../others/Header'
 import Footer from '../others/Footer'
 import UserInsights from "../others/UserInsights"
