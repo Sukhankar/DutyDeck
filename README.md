@@ -1,133 +1,113 @@
-📝 Task Management System
-A full-stack task management platform for administrators and employees to track, manage, and collaborate on assigned tasks with real-time user-specific status updates, insights, and deadline-based validations.
+# 📝 Task Management System
 
-🚀 Features
-👨‍💼 Admin Capabilities
-Create and assign tasks to one or more employees
+A full-stack task management platform for administrators and employees to **track**, **manage**, and **collaborate** on assigned tasks with real-time user-specific status updates, insights, and automatic deadline-based validations.
 
-Set deadlines for each task
+---
 
-View all tasks with color-coded status badges
+## 🚀 Features
 
-Monitor task progress (Pending, In Progress, Completed, Failed)
+### 👨‍💼 Admin Capabilities
+- Create and assign tasks to one or more employees
+- Set deadlines for each task
+- View all tasks with color-coded status badges
+- Monitor task progress (`Pending`, `In Progress`, `Completed`, `Failed`)
+- Delete or update existing tasks
+- Add and manage task-related queries (comments)
+- Visualize user-specific task insights with filtering by status
+- View overall task stats (new, completed, in progress, pending)
 
-Delete or update existing tasks
+### 👷‍♀️ Employee Capabilities
+- Login and view only assigned tasks
+- Update personal task status (`In Progress`, `Completed`)
+- View task queries or raise new ones
+- Tasks automatically marked as `Failed` if deadline passes without completion
+- View own task breakdowns by status (Completed, Pending, etc.)
 
-Add and manage task-related queries (comments)
+---
 
-Visualize user-specific task insights with filtering by status
+## 🛠️ Tech Stack
 
-View overall task stats (new, completed, in progress, pending)
+### Frontend
+- React.js
+- Tailwind CSS
+- Axios
+- React Router DOM
 
-👷‍♀️ Employee Capabilities
-Login and view only assigned tasks
+### Backend
+- Node.js
+- Express.js
+- MongoDB + Mongoose
+- JWT-based Authentication
 
-Update personal task status (e.g. mark as In Progress or Completed)
+---
 
-View task queries or raise queries
+## 📊 User Insights & Filtering
 
-Track if a task has passed its deadline
+- Each user’s task is tracked **independently** with their own status (`Pending`, `In Progress`, `Completed`, `Failed`)
+- Admin can click on a user’s:
+  - `Completed`, `In Progress`, `Failed`, or `Seen` stats
+  - And view all tasks for that user filtered by the selected status
 
-Automatically marked as “Failed” if the deadline is missed without completion
+---
 
-View own task breakdowns per status
+## 🧠 Smart Features
 
-🛠️ Tech Stack
-Frontend
-React.js
+- **⏰ Deadline Enforcement:** Automatically marks tasks as `Failed` if the deadline is missed
+- **👥 Individual User Status:** Users assigned to the same task can have different progress statuses
+- **🔁 Real-time UI Sync:** Stats, insights, and lists update dynamically on task changes
 
-Tailwind CSS
+---
 
-Axios for API calls
+## 🧪 Installation
 
-React Router DOM
+### Clone the Repository
 
-Backend
-Node.js
-
-Express.js
-
-MongoDB (Mongoose for schema modeling)
-
-JWT-based Authentication
-
-📂 Project Structure
-bash
-Copy
-Edit
-/client
-  /components
-    /TaskCard.jsx
-    /TaskModal.jsx
-    /CreateTask.jsx
-    /UserInsights.jsx
-    /TaskNumber.jsx
-  /pages
-    /Dashboard.jsx
-    /Login.jsx
-    /UserTasks.jsx
-  App.jsx
-
-/server
-  /models
-    /Task.js
-    /User.js
-  /routes
-    /tasks.js
-    /users.js
-  /controllers
-    /taskController.js
-  index.js
-📊 User Insights & Filtering
-Each user’s assigned tasks are tracked individually with their own status field. Admins can:
-
-Click on Completed, In Progress, Seen, or Failed counts from the User Insights table.
-
-See detailed filtered tasks for that user and status.
-
-🧠 Smart Features
-Deadline Enforcement: Any task not marked as completed before the deadline is automatically set to Failed.
-
-Individual Status Tracking: Even if multiple users are assigned the same task, their progress is tracked independently.
-
-Real-time UI Sync: Task stats and insights auto-refresh when updates happen.
-
-🧪 Installation
-bash
-Copy
-Edit
+```bash
 git clone https://github.com/your-username/task-management-system.git
 cd task-management-system
-Backend
-bash
-Copy
-Edit
+````
+
+### Backend Setup
+
+```bash
 cd server
 npm install
 npm run dev
-Frontend
-bash
-Copy
-Edit
+```
+
+### Frontend Setup
+
+```bash
 cd client
 npm install
 npm run dev
-🔐 Authentication
-Role-based access (admin vs employee)
+```
 
-JWT stored securely in localStorage
+---
 
-Authenticated APIs protected using middleware
+## 🔐 Authentication
 
-✅ Future Improvements
-Email/SMS notifications on task assignment or deadline alerts
+* Role-based access: `admin` vs `employee`
+* JWT securely stored in localStorage
+* All API endpoints protected by middleware
 
-File attachments with tasks
+---
 
-Admin analytics dashboard
+## ✅ Future Improvements
 
-Export task reports to CSV/PDF
+* Email/SMS notifications on task assignment or approaching deadline
+* File attachments with tasks
+* Analytics dashboard for admin
+* Export task reports as CSV or PDF
 
-📄 License
-This project is open-source under the MIT License.
+---
 
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## 👨‍💻 Author
+
+Made with ❤️ by Subhan and sukhankar (https://github.com/SubhanKhalif)
