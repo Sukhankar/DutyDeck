@@ -19,8 +19,13 @@ const TaskPopup = ({ task, user, onClose, onDeleteQuery, onAddQuery }) => {
         <div className="mb-3">
           <h4 className="font-semibold text-gray-800">Assignees</h4>
           <ul className="list-disc list-inside text-sm text-gray-700">
-            {task.assignTo.map((email, idx) => (
-              <li key={idx}>{email}</li>
+            {task.assignedUsers.map((user, idx) => (
+              <li key={idx}>
+                {user.email} - 
+                <span className="ml-2 text-xs px-2 py-1 rounded bg-gray-100 text-gray-800 font-medium">
+                  {user.status}
+                </span>
+              </li>
             ))}
           </ul>
         </div>

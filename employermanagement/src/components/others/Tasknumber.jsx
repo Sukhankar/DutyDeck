@@ -1,34 +1,33 @@
-import React, { useEffect, useState } from 'react'
-import API from '../../api'
+import React, { useEffect, useState } from 'react';
+import API from '../../api';
 
 const Tasknumber = () => {
-  const [stats, setStats] = useState([])
-  const user = JSON.parse(localStorage.getItem('user'))
+  const [stats, setStats] = useState([]);
+  const user = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
         const res = await API.get('/tasks/stats', {
           params: user.role === 'admin' ? {} : { email: user.email }
-        })
-        setStats(res.data)
+        });
+        setStats(res.data);
       } catch (err) {
-        console.error('Failed to load task stats:', err.message)
+        console.error('Failed to load task stats:', err.message);
       }
-    }
+    };
 
-    fetchStats()
-  }, [user])
+    fetchStats();
+  }, [user]);
 
-  // Example fallback if no stats are loaded
   const defaultStats = [
     { count: 0, label: "New task", bg: "bg-red-500", text: "text-white" },
     { count: 0, label: "Completed task", bg: "bg-green-300", text: "text-gray-900" },
     { count: 0, label: "In Progress", bg: "bg-blue-500", text: "text-white" },
-    { count: 0, label: "Pending", bg: "bg-yellow-500", text: "text-gray-900" }
-  ]
+    { count: 0, label: "Failed", bg: "bg-gray-600", text: "text-white" }
+  ];
 
-  const displayStats = stats && Array.isArray(stats) ? stats : defaultStats
+  const displayStats = Array.isArray(stats) && stats.length > 0 ? stats : defaultStats;
 
   return (
     <div className="w-full flex flex-wrap justify-center gap-4 mt-10 bg-gray-800 p-4 rounded-lg shadow-md">
@@ -49,7 +48,7 @@ const Tasknumber = () => {
         </div>
       ))}
     </div>
-  )
-}
+  );
+};
 
-export default Tasknumber
+export default Tasknumber;

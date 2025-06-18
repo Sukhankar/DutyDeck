@@ -43,10 +43,13 @@ const AllTask = () => {
   }, []);
 
   const filteredTasks = tasks.filter(t => {
-    const matchesStatus = filterStatus ? t.status === filterStatus : true;
-    const matchesSearch =
-      t.title.toLowerCase().includes(search.toLowerCase()) ||
-      t.assignTo.join(', ').toLowerCase().includes(search.toLowerCase());
+    const matchesStatus = filterStatus
+      ? t.assignedUsers.some(user => user.status === filterStatus)
+      : true;
+
+    const matchesSearch = t.title.toLowerCase().includes(search.toLowerCase()) ||
+      t.assignedUsers.some(user => user.email.toLowerCase().includes(search.toLowerCase()));
+
     return matchesStatus && matchesSearch;
   });
 

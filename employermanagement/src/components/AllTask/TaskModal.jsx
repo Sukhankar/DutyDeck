@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import API from '../../api';
 import { formatDistanceToNow } from 'date-fns';
+import statusColorMap from '../../utils/statusColors';
 
 const TaskModal = ({ task, onClose, onTaskUpdate }) => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -13,8 +14,7 @@ const TaskModal = ({ task, onClose, onTaskUpdate }) => {
     category: task.category,
     date: task.date?.split('T')[0] || '',
     deadline: task.deadline?.split('T')[0] || '',
-    status: task.status,
-    assignTo: [...task.assignTo],
+    assignedUsers: task.assignedUsers?.map(u => u.email) || [],
   });
 
   useEffect(() => {
@@ -59,7 +59,24 @@ const TaskModal = ({ task, onClose, onTaskUpdate }) => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await API.put(`/tasks/${task._id}`, form);
+      const assignedUsers = form.assignedUsers.map(email => ({
+        email,
+        status: 'Pending',
+        seen: false,
+        seenAt: null,
+        completedAt: null
+      }));
+
+      const payload = {
+        title: form.title,
+        description: form.description,
+        category: form.category,
+        date: form.date,
+        deadline: form.deadline,
+        assignedUsers
+      };
+
+      await API.put(`/tasks/${task._id}`, payload);
       alert("Task updated!");
       setEditMode(false);
       onTaskUpdate();
@@ -84,9 +101,9 @@ const TaskModal = ({ task, onClose, onTaskUpdate }) => {
   const toggleAssign = (email) => {
     setForm(prev => ({
       ...prev,
-      assignTo: prev.assignTo.includes(email)
-        ? prev.assignTo.filter(u => u !== email)
-        : [...prev.assignTo, email]
+      assignedUsers: prev.assignedUsers.includes(email)
+        ? prev.assignedUsers.filter(u => u !== email)
+        : [...prev.assignedUsers, email]
     }));
   };
 
@@ -135,11 +152,13 @@ const TaskModal = ({ task, onClose, onTaskUpdate }) => {
 
           <div className="mb-4 mt-2">
             <h4 className="font-semibold text-gray-800">Assigned to:</h4>
-            <ul className="list-disc ml-5 text-sm text-gray-700">
-              {task.assignTo.map((email, i) => (
+            <ul className="list-disc ml-5 text-sm text-gray-700 space-y-1">
+              {task.assignedUsers?.map((u, i) => (
                 <li key={i}>
-                  {email}
-                  {showFailed && <span className="ml-2 text-red-600 font-medium">(❌ Missed Deadline)</span>}
+                  {u.email}
+                  <span className={`ml-2 px-2 py-0.5 rounded-full text-xs text-white ${statusColorMap[u.status]}`}>
+                    {u.status}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -176,7 +195,6 @@ const TaskModal = ({ task, onClose, onTaskUpdate }) => {
             </ul>
           </div>
         </div>
-
         {/* Right Side – Edit Form */}
         {editMode && (
           <div className="w-full md:w-1/2 bg-gray-100 p-6 border-l border-gray-300">
@@ -217,16 +235,6 @@ const TaskModal = ({ task, onClose, onTaskUpdate }) => {
                 onChange={(e) => setForm({ ...form, deadline: e.target.value })}
                 className="w-full p-2 border rounded"
               />
-              <select
-                name="status"
-                value={form.status}
-                onChange={(e) => setForm({ ...form, status: e.target.value })}
-                className="w-full p-2 border rounded"
-              >
-                <option value="Pending">Pending</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-              </select>
 
               <div>
                 <label className="block font-medium text-gray-700 mb-1">Assign To:</label>
@@ -235,7 +243,7 @@ const TaskModal = ({ task, onClose, onTaskUpdate }) => {
                     <label key={i} className="flex items-center gap-2 text-sm">
                       <input
                         type="checkbox"
-                        checked={form.assignTo.includes(emp.email)}
+                        checked={form.assignedUsers.includes(emp.email)}
                         onChange={() => toggleAssign(emp.email)}
                       />
                       {emp.name} ({emp.email})

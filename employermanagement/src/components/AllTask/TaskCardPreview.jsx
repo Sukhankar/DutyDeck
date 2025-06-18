@@ -3,6 +3,8 @@ import cardColors from '../../utils/taskColors';
 import statusColorMap from '../../utils/statusColors';
 
 const TaskCard = ({ tasks, onSelect }) => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {tasks.length === 0 ? (
@@ -11,6 +13,8 @@ const TaskCard = ({ tasks, onSelect }) => {
         const color = cardColors[idx % cardColors.length];
         const statusColor = statusColorMap[task.status] || 'bg-gray-400';
         const isDeadlinePassed = task.deadline && new Date(task.deadline) < new Date();
+        const isAssignedToUser = task.assignedUsers.some(u => u.email === user?.email);
+
         return (
           <div
             key={task._id}
@@ -21,10 +25,38 @@ const TaskCard = ({ tasks, onSelect }) => {
               <h3 className={`text-xs px-3 py-1 rounded text-white font-semibold shadow ${statusColor}`}>
                 {task.status}
               </h3>
+              {isAssignedToUser && (
+                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                  Your Task
+                </span>
+              )}
               <span className="text-sm text-gray-700">{new Date(task.date).toLocaleDateString()}</span>
             </div>
             <h2 className="mt-3 text-xl font-bold text-gray-800">{task.title}</h2>
             <p className="text-sm text-gray-700 mt-2">{task.description}</p>
+
+            <div className="mt-3">
+              <p className="font-medium text-gray-700">Assigned To:</p>
+              <ul className="text-sm text-gray-800 mt-1 space-y-1">
+                {task.assignedUsers.map((user, i) => (
+                  <li key={i} className="flex justify-between items-center border-b pb-1">
+                    <span>{user.email}</span>
+                    <span
+                      className={`
+                        text-xs font-semibold px-2 py-1 rounded
+                        ${user.status === 'Completed' ? 'bg-green-100 text-green-700' :
+                          user.status === 'In Progress' ? 'bg-blue-100 text-blue-700' :
+                          user.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-red-100 text-red-700'}
+                      `}
+                    >
+                      {user.status}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
             {task.deadline && (
               <div className="mt-2">
                 <p className="text-sm text-gray-700">

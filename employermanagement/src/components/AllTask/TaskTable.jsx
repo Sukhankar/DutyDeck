@@ -23,16 +23,32 @@ const TaskTable = ({ tasks, onSelect }) => {
             <tr
               key={idx}
               className="hover:bg-gray-50 cursor-pointer"
-              onClick={() => onSelect({ ...t, statusColor: statusColorMap[t.status] })}
+              onClick={() => onSelect(t)}
             >
               <td className="px-6 py-4 text-sm text-gray-800">{t.title}</td>
               <td className="px-6 py-4 text-sm text-gray-600">{t.description}</td>
-              <td className="px-6 py-4 text-sm text-gray-800">{t.date}</td>
+              <td className="px-6 py-4 text-sm text-gray-800">
+                {new Date(t.date).toLocaleDateString()}
+              </td>
               <td className="px-6 py-4 text-sm text-gray-600">{t.category}</td>
-              <td className="px-6 py-4 text-sm">{t.assignTo.join(', ')}</td>
               <td className="px-6 py-4 text-sm">
-                <span className={`px-3 py-1 rounded-full text-white text-xs font-semibold shadow ${statusColorMap[t.status]}`}>
-                  {t.status}
+                <ul className="space-y-1">
+                  {t.assignedUsers?.map((user, i) => (
+                    <li key={i} className="flex items-center gap-2">
+                      {user.email}
+                      <span className={`px-2 py-0.5 rounded-full text-xs text-white ${statusColorMap[user.status]}`}>
+                        {user.status}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </td>
+              <td className="px-6 py-4 text-sm">
+                <span className={`px-3 py-1 rounded-full text-white text-xs font-semibold shadow ${statusColorMap[t.status || 'Pending']}`}>
+                  {/* Optional: show a summary status here if needed */}
+                  {t.assignedUsers?.some(u => u.status === 'In Progress') ? 'In Progress' :
+                   t.assignedUsers?.every(u => u.status === 'Completed') ? 'Completed' :
+                   'Pending'}
                 </span>
               </td>
             </tr>

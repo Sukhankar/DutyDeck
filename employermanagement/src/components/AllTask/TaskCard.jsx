@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 const TaskCard = ({ tasks, onSelect }) => {
   const navigate = useNavigate();
   const cardTasks = tasks.slice(0, 8); // Only show first 8 tasks
+  const user = JSON.parse(localStorage.getItem("user"));
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -15,6 +16,7 @@ const TaskCard = ({ tasks, onSelect }) => {
         const color = cardColors[idx % cardColors.length];
         const statusColor = statusColorMap[task.status] || 'bg-gray-400';
         const isDeadlinePassed = task.deadline && new Date(task.deadline) < new Date();
+        const isAssignedToUser = task.assignedUsers.some(u => u.email === user?.email);
         
         return (
           <div
@@ -26,6 +28,11 @@ const TaskCard = ({ tasks, onSelect }) => {
               <h3 className={`text-xs px-3 py-1 rounded text-white font-semibold shadow ${statusColor}`}>
                 {task.status}
               </h3>
+              {isAssignedToUser && (
+                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                  Your Task
+                </span>
+              )}
               <span className="text-sm text-gray-700">{new Date(task.date).toLocaleDateString()}</span>
             </div>
             <h2 className="mt-3 text-xl font-bold text-gray-800">{task.title}</h2>

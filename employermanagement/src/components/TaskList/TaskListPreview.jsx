@@ -2,17 +2,12 @@ import React, { useState, useEffect } from 'react'
 import API from '../../api'
 import { formatDistanceToNow } from 'date-fns'
 
-// Utility to generate a random color class for cards
 const cardColors = [
-  "bg-yellow-300",
-  "bg-blue-200",
-  "bg-green-200",
-  "bg-pink-200",
-  "bg-purple-200",
-  "bg-orange-200",
-  "bg-teal-200",
-  "bg-indigo-200"
+  "bg-yellow-300", "bg-blue-200", "bg-green-200",
+  "bg-pink-200", "bg-purple-200", "bg-orange-200",
+  "bg-teal-200", "bg-indigo-200"
 ]
+
 const statusColorMap = {
   "Pending": "bg-red-600",
   "To Do": "bg-yellow-600",
@@ -26,68 +21,71 @@ const TaskList = () => {
   const [selectedTask, setSelectedTask] = useState(null)
   const user = JSON.parse(localStorage.getItem("user"))
 
-  // Validate user email before fetching tasks
-  const isValidEmail = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-  }
-
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        // Validate user email before making API call
-        if (!isValidEmail(user?.email)) {
-          console.error("Invalid email format in localStorage")
-          return
-        }
-
+        if (!user?.email) return
         const res = await API.get(`/tasks/user?email=${user.email}`)
-        const coloredTasks = res.data.map(task => ({
-          ...task,
-          color: cardColors[Math.floor(Math.random() * cardColors.length)],
-          statusColor: statusColorMap[task.status] || "bg-gray-400",
-          // Ensure assignTo contains only valid emails
-          assignTo: task.assignTo.filter(email => isValidEmail(email))
-        }))
-        setTasks(coloredTasks)
+        const tasksWithColor = res.data.map(task => {
+          const userEntry = task.assignedUsers.find(u => u.email === user.email)
+          const status = userEntry?.status || 'Pending'
+          return {
+            ...task,
+            userStatus: status,
+            statusColor: statusColorMap[status] || "bg-gray-400",
+            color: cardColors[Math.floor(Math.random() * cardColors.length)],
+          }
+        })
+        setTasks(tasksWithColor)
       } catch (err) {
         console.error("Failed to fetch tasks:", err.message)
         setTasks([])
       }
     }
 
-    if (user?.email && isValidEmail(user.email)) {
-      fetchTasks()
-    }
+    if (user?.email) fetchTasks()
   }, [user])
+
+  const handleStatusChange = async (taskId, currentStatus) => {
+    const nextStatus = {
+      "Pending": "In Progress",
+      "In Progress": "Completed",
+      "Completed": "Pending"
+    }[currentStatus] || "Pending"
+
+    try {
+      const res = await API.patch(`/tasks/${taskId}/status`, {
+        email: user.email,
+        status: nextStatus
+      })
+
+      setTasks(prev => prev.map(task =>
+        task._id === taskId
+          ? {
+              ...task,
+              userStatus: nextStatus,
+              statusColor: statusColorMap[nextStatus]
+            }
+          : task
+      ))
+    } catch (err) {
+      console.error("Failed to update status:", err.message)
+    }
+  }
 
   return (
     <>
-      {/* Responsive layout: stacked cards on mobile, grid on desktop */}
-      <div
-        className={`
-          w-full mx-auto py-10 mt-10
-          flex flex-col items-center max-w-xs
-          sm:max-w-2xl sm:grid sm:grid-cols-2 sm:gap-8 sm:items-stretch
-          lg:max-w-4xl lg:grid-cols-3
-        `}
-        style={{ minHeight: 500 }}
-      >
+      <div className="w-full mx-auto py-10 mt-10 flex flex-col items-center max-w-xs sm:max-w-2xl sm:grid sm:grid-cols-2 sm:gap-8 sm:items-stretch lg:max-w-4xl lg:grid-cols-3" style={{ minHeight: 500 }}>
         {tasks.length === 0 && (
-          <div className="col-span-full text-center text-gray-500 py-10">
-            No tasks found.
-          </div>
+          <div className="col-span-full text-center text-gray-500 py-10">No tasks found.</div>
         )}
+
         {tasks.map((task, idx) => {
-          const isDeadlinePassed = task.deadline && new Date(task.deadline) < new Date();
+          const isDeadlinePassed = task.deadline && new Date(task.deadline) < new Date()
           return (
             <div
-              key={task._id || idx}
-              className={`
-                relative w-full cursor-pointer shadow-xl rounded-2xl transition-all duration-300 ${task.color}
-                ${idx !== 0 ? '-mt-16' : ''}
-                hover:scale-105
-                sm:mt-0 sm:-mb-0 sm:w-full
-              `}
+              key={task._id}
+              className={`relative w-full cursor-pointer shadow-xl rounded-2xl transition-all duration-300 ${task.color} ${idx !== 0 ? '-mt-16' : ''} hover:scale-105 sm:mt-0`}
               style={{
                 zIndex: tasks.length - idx,
                 boxShadow: '0 8px 24px rgba(0,0,0,0.08), 0 1.5px 4px rgba(0,0,0,0.08)'
@@ -96,7 +94,7 @@ const TaskList = () => {
             >
               <div className='flex items-center justify-between px-6 pt-6'>
                 <h3 className={`${task.statusColor} text-xs px-3 py-1 rounded text-white font-semibold shadow`}>
-                  {task.status}
+                  {task.userStatus}
                 </h3>
                 <h4 className="text-xs text-gray-600">{new Date(task.date).toLocaleDateString()}</h4>
               </div>
@@ -106,8 +104,8 @@ const TaskList = () => {
                 {task.deadline && (
                   <div className="mt-2">
                     <p className="text-sm text-gray-700">
-                      Deadline: {' '}
-                      <span className={isDeadlinePassed && task.status !== 'Completed' ? "text-red-600 font-semibold" : ""}>
+                      Deadline:{" "}
+                      <span className={isDeadlinePassed && task.userStatus !== "Completed" ? "text-red-600 font-semibold" : ""}>
                         {new Date(task.deadline).toLocaleDateString()}
                       </span>
                     </p>
@@ -116,22 +114,11 @@ const TaskList = () => {
                 <button
                   className="mt-2 bg-white text-gray-900 font-medium text-xs px-3 py-1 rounded shadow hover:bg-gray-100"
                   onClick={async (e) => {
-                    e.stopPropagation();
-                    const nextStatus = {
-                      "Pending": "In Progress",
-                      "In Progress": "Completed",
-                      "Completed": "Pending"
-                    }[task.status] || "Pending";
-
-                    try {
-                      const res = await API.patch(`/tasks/${task._id}/status`, { status: nextStatus });
-                      setTasks(prev => prev.map(t => t._id === task._id ? { ...t, status: res.data.status } : t));
-                    } catch (err) {
-                      console.error("Failed to update status:", err.message);
-                    }
+                    e.stopPropagation()
+                    await handleStatusChange(task._id, task.userStatus)
                   }}
                 >
-                  Mark as {task.status === "Pending" ? "In Progress" : task.status === "In Progress" ? "Completed" : "Pending"}
+                  Mark as {task.userStatus === "Pending" ? "In Progress" : task.userStatus === "In Progress" ? "Completed" : "Pending"}
                 </button>
               </div>
             </div>
@@ -139,7 +126,7 @@ const TaskList = () => {
         })}
       </div>
 
-      {/* Popup Modal */}
+      {/* Modal */}
       {selectedTask && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
           <div className={`relative w-full max-w-md mx-auto rounded-2xl shadow-2xl ${selectedTask.color} p-8 animate-pop`}>
@@ -152,73 +139,62 @@ const TaskList = () => {
             </button>
             <div className="flex items-center gap-3 mb-4">
               <h3 className={`${selectedTask.statusColor} text-xs px-3 py-1 rounded text-white font-semibold shadow`}>
-                {selectedTask.status}
+                {selectedTask.userStatus}
               </h3>
               <h4 className="text-xs text-gray-600">{new Date(selectedTask.date).toLocaleDateString()}</h4>
             </div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">{selectedTask.title}</h2>
             <p className="text-base text-gray-700">{selectedTask.description}</p>
 
-            {/* Query/Comment Section */}
+            {/* Task Queries */}
             <div className="mt-4 border-t pt-4">
               <h4 className="text-lg font-bold text-gray-800 mb-2">Task Queries</h4>
-
-              {/* Query Form */}
               <form
                 onSubmit={async (e) => {
-                  e.preventDefault();
-                  const message = e.target.query.value.trim();
-                  if (!message) return;
+                  e.preventDefault()
+                  const message = e.target.query.value.trim()
+                  if (!message) return
 
                   try {
                     const res = await API.post(`/tasks/${selectedTask._id}/queries`, {
                       user: user.email,
                       message
-                    });
-                    setSelectedTask(prev => ({ ...prev, queries: res.data }));
-                    e.target.reset();
+                    })
+                    setSelectedTask(prev => ({ ...prev, queries: res.data }))
+                    e.target.reset()
                   } catch (err) {
-                    console.error("Failed to add query:", err.message);
+                    console.error("Failed to add query:", err.message)
                   }
                 }}
               >
                 <textarea
                   name="query"
-                  placeholder="Type your query or comment..."
+                  placeholder="Type your query..."
                   className="w-full p-2 border rounded text-sm mb-2"
                   rows={2}
                 />
-                <button type="submit" className="bg-blue-600 text-white text-sm px-3 py-1 rounded">
-                  Add Query
-                </button>
+                <button type="submit" className="bg-blue-600 text-white text-sm px-3 py-1 rounded">Add Query</button>
               </form>
 
-              {/* Enhanced Query List */}
               <ul className="mt-4 space-y-2 max-h-48 overflow-y-auto">
                 {selectedTask.queries?.map(q => (
                   <li key={q.id} className="bg-white p-3 rounded-lg shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-800 break-words">{q.message}</p>
-                        <div className="flex items-center mt-1">
-                          <span className="text-xs text-gray-500 mr-2">{q.user}</span>
-                          <span className="text-xs text-gray-400">
-                            {formatDistanceToNow(new Date(q.createdAt), { addSuffix: true })}
-                          </span>
-                        </div>
+                      <div>
+                        <p className="text-sm text-gray-800">{q.message}</p>
+                        <div className="text-xs text-gray-500">{q.user} • {formatDistanceToNow(new Date(q.createdAt), { addSuffix: true })}</div>
                       </div>
                       {q.user === user.email && (
                         <button
                           onClick={async () => {
                             try {
-                              const res = await API.delete(`/tasks/${selectedTask._id}/queries/${q.id}`);
-                              setSelectedTask(prev => ({ ...prev, queries: res.data }));
+                              const res = await API.delete(`/tasks/${selectedTask._id}/queries/${q.id}`)
+                              setSelectedTask(prev => ({ ...prev, queries: res.data }))
                             } catch (err) {
-                              console.error("Delete failed:", err.message);
+                              console.error("Failed to delete query:", err.message)
                             }
                           }}
                           className="text-xs text-red-600 hover:text-red-700 ml-2"
-                          title="Delete query"
                         >
                           ✕
                         </button>
@@ -229,17 +205,6 @@ const TaskList = () => {
               </ul>
             </div>
           </div>
-          <style>
-            {`
-              .animate-pop {
-                animation: popIn 0.25s cubic-bezier(.4,2,.6,1) both;
-              }
-              @keyframes popIn {
-                0% { transform: scale(0.8); opacity: 0; }
-                100% { transform: scale(1); opacity: 1; }
-              }
-            `}
-          </style>
         </div>
       )}
     </>

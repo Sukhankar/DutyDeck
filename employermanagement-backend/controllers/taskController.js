@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import User from "../models/userModel.js";
 import Task from "../models/Task.js";
 
+// ✅ Create Task
 export const createTask = async (req, res) => {
   try {
     const { title, date, deadline, assignTo, category, description } = req.body;
@@ -10,14 +11,25 @@ export const createTask = async (req, res) => {
       return res.status(400).json({ message: "All fields are required." });
     }
 
+    if (!Array.isArray(assignTo)) {
+      return res.status(400).json({ message: "assignTo must be an array" });
+    }
+
+    const assignedUsers = assignTo.map(email => ({
+      email,
+      status: 'Pending',
+      seen: false,
+      seenAt: null,
+      completedAt: null
+    }));
+
     const newTask = new Task({
       title,
       date,
       deadline,
-      assignTo,
+      assignedUsers,
       category,
       description,
-      status: "Pending"
     });
 
     const savedTask = await newTask.save();
@@ -28,6 +40,7 @@ export const createTask = async (req, res) => {
   }
 };
 
+// ✅ Get All Tasks
 export const getAllTasks = async (req, res) => {
   try {
     const tasks = await Task.find().sort({ createdAt: -1 });
@@ -38,6 +51,7 @@ export const getAllTasks = async (req, res) => {
   }
 };
 
+// ✅ Get Tasks for Specific User
 export const getTasksForUser = async (req, res) => {
   try {
     const { email } = req.query;
@@ -46,7 +60,7 @@ export const getTasksForUser = async (req, res) => {
       return res.status(400).json({ message: "Email is required" });
     }
 
-    const tasks = await Task.find({ assignTo: { $in: [email] } }).sort({ createdAt: -1 });
+    const tasks = await Task.find({ "assignedUsers.email": email }).sort({ createdAt: -1 });
     res.status(200).json(tasks);
   } catch (error) {
     console.error("Error fetching tasks:", error.message);
@@ -54,37 +68,72 @@ export const getTasksForUser = async (req, res) => {
   }
 };
 
+// ✅ Get User Tasks with Status Filter
+export const getUserTasks = async (req, res) => {
+  const { email, status } = req.query;
+
+  if (!email || !status) {
+    return res.status(400).json({ message: "Email and status are required" });
+  }
+
+  try {
+    const tasks = await Task.find({ 'assignedUsers.email': email });
+
+    const filtered = tasks.filter(task => {
+      const assigned = task.assignedUsers.find(u => u.email === email);
+
+      if (!assigned) return false;
+
+      if (status === 'Seen') {
+        return assigned.seen === true;
+      }
+
+      return assigned.status === status;
+    });
+
+    const result = filtered.map(task => {
+      const assigned = task.assignedUsers.find(u => u.email === email);
+      return {
+        _id: task._id,
+        title: task.title,
+        description: task.description,
+        deadline: task.deadline,
+        userStatus: assigned.status
+      };
+    });
+
+    res.json(result);
+  } catch (err) {
+    console.error('Failed to fetch user tasks:', err.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// ✅ Get Task Stats
 export const getTaskStats = async (req, res) => {
   try {
     const { email } = req.query;
-    const query = email ? { assignTo: email } : {};
-    const tasks = await Task.find(query);
+    const tasks = await Task.find({ "assignedUsers.email": email });
+
+    const counts = {
+      Pending: 0,
+      "In Progress": 0,
+      Completed: 0,
+      Failed: 0,
+    };
+
+    tasks.forEach(task => {
+      const userEntry = task.assignedUsers.find(u => u.email === email);
+      if (userEntry) {
+        counts[userEntry.status] = (counts[userEntry.status] || 0) + 1;
+      }
+    });
 
     const stats = [
-      {
-        label: "New task",
-        count: tasks.filter(t => t.status === "Pending").length,
-        bg: "bg-red-500",
-        text: "text-white"
-      },
-      {
-        label: "Completed task",
-        count: tasks.filter(t => t.status === "Completed").length,
-        bg: "bg-green-300",
-        text: "text-gray-900"
-      },
-      {
-        label: "In Progress",
-        count: tasks.filter(t => t.status === "In Progress").length,
-        bg: "bg-blue-500",
-        text: "text-white"
-      },
-      {
-        label: "Pending",
-        count: tasks.filter(t => t.status === "Pending").length,
-        bg: "bg-yellow-500",
-        text: "text-gray-900"
-      }
+      { label: "New task", count: counts["Pending"], bg: "bg-red-500", text: "text-white" },
+      { label: "Completed task", count: counts["Completed"], bg: "bg-green-300", text: "text-gray-900" },
+      { label: "In Progress", count: counts["In Progress"], bg: "bg-blue-500", text: "text-white" },
+      { label: "Failed", count: counts["Failed"], bg: "bg-gray-500", text: "text-white" },
     ];
 
     res.status(200).json(stats);
@@ -94,16 +143,25 @@ export const getTaskStats = async (req, res) => {
   }
 };
 
+// ✅ Get User Insights
 export const getUserInsights = async (req, res) => {
   try {
     const users = await User.find({ role: "user" }).select("name email");
 
     const insights = await Promise.all(users.map(async (user) => {
-      const tasks = await Task.find({ assignTo: user.email });
+      const tasks = await Task.find({ "assignedUsers.email": user.email });
 
-      const completed = tasks.filter(t => t.status === "Completed").length;
-      const inProgress = tasks.filter(t => t.status === "In Progress").length;
-      const seen = tasks.filter(t => t.seenBy?.includes(user.email)).length;
+      let completed = 0, inProgress = 0, seen = 0, failed = 0;
+
+      tasks.forEach(task => {
+        const entry = task.assignedUsers.find(u => u.email === user.email);
+        if (entry) {
+          if (entry.status === "Completed") completed++;
+          if (entry.status === "In Progress") inProgress++;
+          if (entry.status === "Failed") failed++;
+          if (entry.seen) seen++;
+        }
+      });
 
       return {
         name: user.name,
@@ -112,6 +170,7 @@ export const getUserInsights = async (req, res) => {
         completed,
         inProgress,
         seen,
+        failed
       };
     }));
 
@@ -122,22 +181,54 @@ export const getUserInsights = async (req, res) => {
   }
 };
 
+// ✅ Update Task Status (Per User)
 export const updateTaskStatus = async (req, res) => {
   try {
     const { taskId } = req.params;
-    const { status } = req.body;
+    const { email, status } = req.body;
 
-    const updated = await Task.findByIdAndUpdate(taskId, { status }, { new: true });
-    res.status(200).json(updated);
+    if (!['Pending', 'In Progress', 'Completed', 'Failed'].includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    const task = await Task.findById(taskId);
+    if (!task) return res.status(404).json({ message: "Task not found" });
+
+    const user = task.assignedUsers.find(u => u.email === email);
+    if (!user) return res.status(404).json({ message: "User not assigned to this task" });
+
+    user.status = status;
+    if (status === 'Completed') {
+      user.completedAt = new Date();
+    } else if (status === 'Failed') {
+      user.completedAt = null;
+    }
+
+    await task.save();
+    res.status(200).json(task);
   } catch (err) {
+    console.error("Update status error:", err.message);
     res.status(500).json({ message: "Failed to update task status" });
   }
 };
 
+// ✅ Update Task (including assigned users)
 export const updateTask = async (req, res) => {
   try {
     const { taskId } = req.params;
     const updateData = req.body;
+
+    // Convert `assignTo` to `assignedUsers` if present
+    if (Array.isArray(updateData.assignTo)) {
+      updateData.assignedUsers = updateData.assignTo.map(email => ({
+        email,
+        status: 'Pending',
+        seen: false,
+        seenAt: null,
+        completedAt: null
+      }));
+      delete updateData.assignTo;
+    }
 
     const updatedTask = await Task.findByIdAndUpdate(taskId, updateData, { new: true });
 
@@ -152,12 +243,12 @@ export const updateTask = async (req, res) => {
   }
 };
 
+// ✅ Delete Task
 export const deleteTask = async (req, res) => {
   try {
     const { taskId } = req.params;
 
     const deletedTask = await Task.findByIdAndDelete(taskId);
-
     if (!deletedTask) {
       return res.status(404).json({ message: "Task not found" });
     }
@@ -169,6 +260,7 @@ export const deleteTask = async (req, res) => {
   }
 };
 
+// ✅ Add Query to Task
 export const addQueryToTask = async (req, res) => {
   try {
     const { taskId } = req.params;
@@ -177,7 +269,13 @@ export const addQueryToTask = async (req, res) => {
     const task = await Task.findById(taskId);
     if (!task) return res.status(404).json({ message: "Task not found" });
 
-    const newQuery = { id: uuidv4(), user, message };
+    const newQuery = {
+      id: uuidv4(),
+      user,
+      message,
+      createdAt: new Date()
+    };
+
     task.queries.push(newQuery);
     await task.save();
 
@@ -187,11 +285,14 @@ export const addQueryToTask = async (req, res) => {
   }
 };
 
+// ✅ Delete Query
 export const deleteQuery = async (req, res) => {
   try {
     const { taskId, queryId } = req.params;
 
     const task = await Task.findById(taskId);
+    if (!task) return res.status(404).json({ message: "Task not found" });
+
     task.queries = task.queries.filter(q => q.id !== queryId);
     await task.save();
 

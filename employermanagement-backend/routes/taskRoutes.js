@@ -1,28 +1,51 @@
 import express from 'express';
-import { 
-  createTask, 
-  getAllTasks, 
-  getTasksForUser, 
-  getTaskStats, 
+import {
+  createTask,
+  getAllTasks,
+  getTasksForUser,
+  getTaskStats,
   getUserInsights,
   addQueryToTask,
   deleteQuery,
   updateTaskStatus,
   updateTask,
-  deleteTask
+  deleteTask,
+  getUserTasks
 } from '../controllers/taskController.js';
 
 const router = express.Router();
 
+// 🔹 Create a new task with assignedUsers
 router.post('/', createTask);
-router.get('/', getAllTasks); // Optional: view tasks
-router.get('/user', getTasksForUser); // GET /api/tasks/user?email=user@example.com
-router.get('/stats', getTaskStats); // GET /api/tasks/stats
+
+// 🔹 Get all tasks (for admin)
+router.get('/', getAllTasks);
+
+// 🔹 Get tasks assigned to a specific user (by email)
+router.get('/user', getTasksForUser); // ?email=user@example.com
+
+// 🔹 Get user tasks with status filter
+router.get('/user-tasks', getUserTasks); // ?email=user@example.com&status=Completed
+
+// 🔹 Get status-wise task stats for a specific user
+router.get('/stats', getTaskStats); // ?email=user@example.com
+
+// 🔹 Admin insight panel - task completion status of all users
 router.get('/user-insights', getUserInsights);
+
+// 🔹 Update a specific user's task status (Pending, In Progress, Completed, Failed)
 router.patch('/:taskId/status', updateTaskStatus);
-router.put('/:taskId', updateTask); // PUT /api/tasks/:taskId
-router.delete('/:taskId', deleteTask); // DELETE /api/tasks/:taskId
+
+// 🔹 Update the entire task (admin use - edit title, desc, deadline etc)
+router.put('/:taskId', updateTask);
+
+// 🔹 Delete a task
+router.delete('/:taskId', deleteTask);
+
+// 🔹 Add a query to a task
 router.post('/:taskId/queries', addQueryToTask);
+
+// 🔹 Delete a specific query from a task
 router.delete('/:taskId/queries/:queryId', deleteQuery);
 
 export default router;
