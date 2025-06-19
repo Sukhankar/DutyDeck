@@ -14,7 +14,7 @@ const app = express();
 // CORS Configuration to allow both Vercel frontend and local development
 const corsOptions = {
   origin: ['https://duty-deck.vercel.app', 'http://localhost:5173'], // allow both production and development domains
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH' ,'DELETE', 'OPTIONS'],
   credentials: true, // allow cookies or Authorization headers
 };
 
