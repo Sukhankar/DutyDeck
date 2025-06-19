@@ -57,7 +57,9 @@ const UserInsights = () => {
                 <tr key={idx} className="hover:bg-gray-50 transition">
                   <td className="py-2 px-4 border">{user.name}</td>
                   <td className="py-2 px-4 border">{user.email}</td>
-                  <td className="py-2 px-4 border">{user.total}</td>
+                  <td className="py-2 px-4 border">
+                    {user.total}
+                  </td>
                   <td className="py-2 px-4 border text-green-600 cursor-pointer underline"
                       onClick={() => handleStatusClick(user.email, 'Completed')}>
                     {user.completed}

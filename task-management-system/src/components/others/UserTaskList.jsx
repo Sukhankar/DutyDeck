@@ -30,6 +30,17 @@ const UserTaskList = () => {
     }
   }, [email, status]);
 
+  const formatDateTime = (date) => {
+    if (!date) return 'Not available';
+    return new Date(date).toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
   return (
     <div className="max-w-6xl mx-auto p-6">
       <h2 className="text-2xl font-bold mb-4 text-gray-800">
@@ -45,6 +56,16 @@ const UserTaskList = () => {
               <p className="text-sm text-gray-600 mb-1">{task.description}</p>
               <p className="text-xs text-gray-400">Due: {new Date(task.deadline).toLocaleDateString()}</p>
               <p className="text-xs text-gray-500 mt-1">Status: {task.userStatus}</p>
+              <div className="mt-2 space-y-1">
+                <p className="text-xs text-gray-500">
+                  Seen: {task.seen ? formatDateTime(task.seenAt) : 'Not seen'}
+                </p>
+                {task.userStatus === 'Completed' && (
+                  <p className="text-xs text-gray-500">
+                    Completed: {formatDateTime(task.completedAt)}
+                  </p>
+                )}
+              </div>
             </div>
           ))}
         </div>

@@ -98,7 +98,10 @@ export const getUserTasks = async (req, res) => {
         title: task.title,
         description: task.description,
         deadline: task.deadline,
-        userStatus: assigned.status
+        userStatus: assigned.status,
+        seen: assigned.seen,
+        seenAt: assigned.seenAt,
+        completedAt: assigned.completedAt
       };
     });
 
@@ -170,7 +173,15 @@ export const getUserInsights = async (req, res) => {
         completed,
         inProgress,
         seen,
-        failed
+        failed,
+        lastSeen: tasks.reduce((latest, task) => {
+          const entry = task.assignedUsers.find(u => u.email === user.email);
+          return entry?.seenAt > latest ? entry.seenAt : latest;
+        }, null),
+        lastCompleted: tasks.reduce((latest, task) => {
+          const entry = task.assignedUsers.find(u => u.email === user.email);
+          return entry?.completedAt > latest ? entry.completedAt : latest;
+        }, null)
       };
     }));
 
@@ -185,7 +196,7 @@ export const getUserInsights = async (req, res) => {
 export const updateTaskStatus = async (req, res) => {
   try {
     const { taskId } = req.params;
-    const { email, status } = req.body;
+    const { email, status, seen } = req.body;
 
     if (!['Pending', 'In Progress', 'Completed', 'Failed'].includes(status)) {
       return res.status(400).json({ message: "Invalid status value" });
@@ -197,6 +208,13 @@ export const updateTaskStatus = async (req, res) => {
     const user = task.assignedUsers.find(u => u.email === email);
     if (!user) return res.status(404).json({ message: "User not assigned to this task" });
 
+    // Update seen status if provided
+    if (seen !== undefined) {
+      user.seen = seen;
+      user.seenAt = seen ? new Date() : null;
+    }
+
+    // Update task status
     user.status = status;
     if (status === 'Completed') {
       user.completedAt = new Date();
