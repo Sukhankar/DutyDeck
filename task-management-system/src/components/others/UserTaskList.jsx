@@ -57,9 +57,6 @@ const UserTaskList = () => {
               <p className="text-xs text-gray-400">Due: {new Date(task.deadline).toLocaleDateString()}</p>
               <p className="text-xs text-gray-500 mt-1">Status: {task.userStatus}</p>
               <div className="mt-2 space-y-1">
-                <p className="text-xs text-gray-500">
-                  Seen: {task.seen ? formatDateTime(task.seenAt) : 'Not seen'}
-                </p>
                 {task.userStatus === 'Completed' && (
                   <p className="text-xs text-gray-500">
                     Completed: {formatDateTime(task.completedAt)}

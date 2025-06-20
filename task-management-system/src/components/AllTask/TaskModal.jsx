@@ -107,9 +107,9 @@ const TaskModal = ({ task, onClose, onTaskUpdate }) => {
     }));
   };
 
-  // 🧠 Determine if deadline passed
+  // Determine if deadline passed and if task is completed
   const isDeadlinePassed = task.deadline && new Date(task.deadline) < new Date();
-  const showFailed = isDeadlinePassed && task.status !== "Completed";
+  const isCompleted = task.assignedUsers?.some(u => u.email === user.email && u.status === 'Completed');
 
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex justify-center items-center p-4 overflow-auto">

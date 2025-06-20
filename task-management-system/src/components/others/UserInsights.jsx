@@ -47,7 +47,6 @@ const UserInsights = () => {
               <th className="py-2 px-4 border">Total</th>
               <th className="py-2 px-4 border">Completed</th>
               <th className="py-2 px-4 border">In Progress</th>
-              <th className="py-2 px-4 border">Seen</th>
               <th className="py-2 px-4 border">Failed</th>
             </tr>
           </thead>
@@ -68,10 +67,6 @@ const UserInsights = () => {
                       onClick={() => handleStatusClick(user.email, 'In Progress')}>
                     {user.inProgress}
                   </td>
-                  <td className="py-2 px-4 border text-purple-600 cursor-pointer underline"
-                      onClick={() => handleStatusClick(user.email, 'Seen')}>
-                    {user.seen}
-                  </td>
                   <td className="py-2 px-4 border text-red-600 cursor-pointer underline"
                       onClick={() => handleStatusClick(user.email, 'Failed')}>
                     {user.failed}
@@ -80,7 +75,7 @@ const UserInsights = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="text-center py-4 text-gray-500">
+                <td colSpan="6" className="text-center py-4 text-gray-500">
                   No user insights available
                 </td>
               </tr>
