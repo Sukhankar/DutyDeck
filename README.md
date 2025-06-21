@@ -1,4 +1,4 @@
-✨ DutyDeck — Task Management System
+##✨ DutyDeck — Task Management System
 Empowering teams with seamless task tracking, collaboration, and deadline enforcement.
 
 🚀 at a Glance
