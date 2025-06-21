@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import API from '../../api';
-import TaskCard from '../AllTask/TaskCardPreview';
-import TaskTable from '../AllTask/TaskTable';
-import TaskModal from '../AllTask/TaskModal';
+import TaskCard from './TaskCardPreview';
+import TaskTable from './TaskTable';
+import TaskModal from './TaskModal';
 
 const statusOptions = [
   { label: "All", value: "" },

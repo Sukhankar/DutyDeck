@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import API from '../../api';
-import TaskCard from './TaskCard';
+import TaskCard from './TaskCardPreview';
 import TaskTable from './TaskTable';
 import TaskModal from './TaskModal';
 
@@ -32,24 +32,13 @@ const AllTask = () => {
 
   useEffect(() => {
     fetchTasks();
-    
-    // Set up interval to refresh tasks every second
-    const interval = setInterval(() => {
-      fetchTasks();
-    }, 1000);
-
-    // Clean up interval on component unmount
-    return () => clearInterval(interval);
   }, []);
 
   const filteredTasks = tasks.filter(t => {
-    const matchesStatus = filterStatus
-      ? t.assignedUsers.some(user => user.status === filterStatus)
-      : true;
-
-    const matchesSearch = t.title.toLowerCase().includes(search.toLowerCase()) ||
-      t.assignedUsers.some(user => user.email.toLowerCase().includes(search.toLowerCase()));
-
+    const matchesStatus = filterStatus ? t.status === filterStatus : true;
+    const matchesSearch =
+      t.title.toLowerCase().includes(search.toLowerCase()) ||
+      t.assignTo.join(', ').toLowerCase().includes(search.toLowerCase());
     return matchesStatus && matchesSearch;
   });
 

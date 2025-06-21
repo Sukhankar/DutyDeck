@@ -5,9 +5,9 @@ import RegisterAdmin from "../src/components/Auth/RegisterAdmin";
 import DashboardUser from "../src/components/Dashboard/EmployeeDashboard";
 import DashboardAdmin from "../src/components/Dashboard/AdminDashboard";
 import LandingPage from "../src/components/landing/landingpage";
-import AllTaskPreview from "../src/components/others/AllTaskPreview";
-import TaskListPreview from "../src/components/TaskList/TaskListPreview";
-import UserTaskList from "../src/components/others/UserTaskList";
+import AllTaskPreview from "../src/components/admincomponents/AllTaskPreview";
+import TaskListPreview from "../src/components/usercomponents/TaskListPreview";
+import UserTaskList from "../src/components/admincomponents/UserTaskList";
 
 export default function App() {
   return (

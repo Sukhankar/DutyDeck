@@ -14,6 +14,7 @@ const TaskCard = ({ tasks, onSelect }) => {
         const statusColor = statusColorMap[task.status] || 'bg-gray-400';
         const isDeadlinePassed = task.deadline && new Date(task.deadline) < new Date();
         const isAssignedToUser = task.assignedUsers.some(u => u.email === user?.email);
+        const hasManyAssignees = task.assignedUsers.length > 5;
 
         return (
           <div
@@ -37,24 +38,26 @@ const TaskCard = ({ tasks, onSelect }) => {
 
             <div className="mt-3">
               <p className="font-medium text-gray-700">Assigned To:</p>
-              <ul className="text-sm text-gray-800 mt-1 space-y-1">
-                {task.assignedUsers.map((user, i) => (
-                  <li key={i} className="flex justify-between items-center border-b pb-1">
-                    <span>{user.email}</span>
-                    <span
-                      className={`
-                        text-xs font-semibold px-2 py-1 rounded
-                        ${user.status === 'Completed' ? 'bg-green-100 text-green-700' :
-                          user.status === 'In Progress' ? 'bg-blue-100 text-blue-700' :
-                          user.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
-                          'bg-red-100 text-red-700'}
-                      `}
-                    >
-                      {user.status}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              <div className={`${hasManyAssignees ? 'max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100' : ''} rounded`}>
+                <ul className="text-sm text-gray-800 mt-1 space-y-1 pr-2">
+                  {task.assignedUsers.map((user, i) => (
+                    <li key={i} className="flex justify-between items-center border-b pb-1">
+                      <span>{user.name}</span>
+                      <span
+                        className={`
+                          text-xs font-semibold px-2 py-1 rounded
+                          ${user.status === 'Completed' ? 'bg-green-100 text-green-700' :
+                            user.status === 'In Progress' ? 'bg-blue-100 text-blue-700' :
+                            user.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
+                            'bg-red-100 text-red-700'}
+                        `}
+                      >
+                        {user.status}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
 
             {task.deadline && (
