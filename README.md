@@ -74,7 +74,7 @@ Token safely stored on the client side
 📤 Export: CSV/PDF reporting for tasks
 
 ## 📄 License
-Licensed under the MIT License.
+Licensed under the [MIT License](LICENSE).
 
 ## 👨‍💻 Maintainers
-Built with ❤️ by Sukhankar and Subhan
+Built with ❤️ by [Sukhankar](https://github.com/Sukhankar) and [Subhan](https://github.com/SubhanKhalif)
