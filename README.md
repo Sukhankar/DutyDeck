@@ -41,20 +41,22 @@ Backend	Node.js • Express.js • MongoDB/Mongoose • JWT Auth
 
 ## 📥 Installation
 Clone the repo and get started:
-
-bash
-Copy
-Edit
+```bash
 git clone https://github.com/Sukhankar/DutyDeck.git
 cd DutyDeck
+```
 
 ## Start Backend
+```bash
 cd server
 npm install && npm run dev
+```
 
 ## Start Frontend
+```bash
 cd client
 npm install && npm run dev
+```
 🔐 Authentication & Access
 JWT-based, role-specific access (Admin vs Employee)
 
