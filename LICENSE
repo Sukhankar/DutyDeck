@@ -3,14 +3,15 @@ MIT License
 Copyright (c) 2025 Sukhankar
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+of this software and associated documentation files (the "Software"), to study,
+learn from, and reference the design, concepts, and implementation for personal
+or educational purposes, provided that the Software is **not used directly**
+in any product, distributed, sublicensed, sold, or otherwise exploited in
+unmodified or substantially similar form, except by permission of the author.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+## Commons Clause Condition
+
+The right to sell, sublicense, or provide for a fee the Software is **not granted**.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
