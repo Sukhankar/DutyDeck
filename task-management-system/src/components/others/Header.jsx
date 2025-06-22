@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import API from '../api';
+import API from '../../api';
 
 const Header = ({ onLogout }) => {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ const Header = ({ onLogout }) => {
     const fetchUserName = async () => {
       try {
         const res = await API.get('/users/employees');
-        const user = res.data.find(u => u.email === loggedInEmail);
+        const user = res.data.find(u => u.email === loggedInUser?.email);
         if (user) {
           setUserName(user.name);
         }
