@@ -74,15 +74,27 @@ export default function RegisterAdmin() {
             <label htmlFor="organization" className="text-blue-100 font-medium">
               Organization
             </label>
-            <input
+            <select
               id="organization"
-              type="text"
               required
               value={form.organization}
               onChange={e => setForm({ ...form, organization: e.target.value })}
               className="bg-white/20 border border-white/30 text-blue-100 placeholder-blue-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-400 transition text-lg shadow-inner"
-              placeholder="Enter your organization"
-            />
+              style={{ backgroundColor: "rgba(255,255,255,0.12)" }}
+            >
+              <option value="" disabled style={{ backgroundColor: "rgba(30,41,59,0.95)", color: "#93c5fd" }}>
+                Select your organization
+              </option>
+              <option value="MERN stack" style={{ backgroundColor: "rgba(30,41,59,0.95)", color: "#93c5fd" }}>
+                MERN stack
+              </option>
+              <option value="AI software development" style={{ backgroundColor: "rgba(30,41,59,0.95)", color: "#93c5fd" }}>
+                AI software development
+              </option>
+              <option value="App development" style={{ backgroundColor: "rgba(30,41,59,0.95)", color: "#93c5fd" }}>
+                App development
+              </option>
+            </select>
           </div>
           <button
             type="submit"
