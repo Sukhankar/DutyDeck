@@ -3,6 +3,7 @@ import API from '../../api';
 
 const CreateTask = () => {
   const [employees, setEmployees] = useState([]);
+  const [orgFilter, setOrgFilter] = useState('');
 
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
@@ -177,7 +178,20 @@ const CreateTask = () => {
       {/* Assign To Popup */}
       {showAssignPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.15)" }}>
-          <div className="bg-white rounded-xl p-8 max-w-lg w-full shadow-2xl relative">
+          <div
+            className="bg-white rounded-xl p-8 w-full shadow-2xl relative"
+            style={{
+              width: "100%",
+              maxWidth:
+                employees.length <= 6
+                  ? "400px"
+                  : employees.length <= 12
+                  ? "600px"
+                  : "900px",
+              minWidth: "320px",
+              transition: "max-width 0.2s"
+            }}
+          >
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-bold text-gray-800">Select Employees</h3>
               <button
@@ -189,6 +203,22 @@ const CreateTask = () => {
               </button>
             </div>
 
+            {/* Organization Filter */}
+            <div className="flex items-center justify-end mb-4">
+              <label htmlFor="org-filter" className="mr-2 text-blue-900 font-medium">Filter by Organization:</label>
+              <select
+                id="org-filter"
+                className="border border-blue-300 rounded-lg px-3 py-2 text-blue-900 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                value={orgFilter}
+                onChange={e => setOrgFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {[...new Set(employees.map(emp => emp.organization).filter(Boolean))].map(org => (
+                  <option key={org} value={org}>{org}</option>
+                ))}
+              </select>
+            </div>
+
             <div className="flex items-center justify-between mb-2">
               <label className="flex items-center gap-2 text-blue-900 font-medium cursor-pointer">
                 <input type="checkbox" checked={isAllSelected} onChange={handleSelectAll} />
@@ -196,23 +226,31 @@ const CreateTask = () => {
               </label>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-h-72 overflow-y-auto">
-              {employees.length === 0 ? (
+            <div
+              className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-h-72 overflow-y-auto"
+              style={{
+                minHeight: employees.length === 0 ? "3rem" : undefined,
+                maxHeight: "18rem"
+              }}
+            >
+              {(employees.filter(emp => !orgFilter || emp.organization === orgFilter)).length === 0 ? (
                 <div className="col-span-full text-gray-500 text-center">No employees found.</div>
               ) : (
-                employees.map((emp, idx) => (
-                  <label
-                    key={idx}
-                    className="flex items-center gap-2 bg-blue-50 rounded-lg px-3 py-2 cursor-pointer border border-blue-200 hover:bg-blue-100 transition"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={assignTo.includes(emp.email)}
-                      onChange={() => handleAssignChange(emp.email)}
-                    />
-                    <span className="text-blue-900 font-medium">{emp.name} ({emp.email})</span>
-                  </label>
-                ))
+                employees
+                  .filter(emp => !orgFilter || emp.organization === orgFilter)
+                  .map((emp, idx) => (
+                    <label
+                      key={idx}
+                      className="flex items-center gap-2 bg-blue-50 rounded-lg px-3 py-2 cursor-pointer border border-blue-200 hover:bg-blue-100 transition"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={assignTo.includes(emp.email)}
+                        onChange={() => handleAssignChange(emp.email)}
+                      />
+                      <span className="text-blue-900 font-medium">{emp.name} ({emp.organization})</span>
+                    </label>
+                  ))
               )}
             </div>
 
