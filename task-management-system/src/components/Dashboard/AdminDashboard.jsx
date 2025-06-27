@@ -1,9 +1,9 @@
-import React from 'react'
-import CreateTask from '../others/CreateTask'
-import AllTask from '../AllTask/AllTask'
-import Header from '../others/Header'
-import Footer from '../others/Footer'
-import UserInsights from "../others/UserInsights"
+import React from 'react';
+import CreateTask from '../admincomponents/CreateTask';
+import AllTask from '../admincomponents/AllTask';
+import Header from '../others/Header';
+import Footer from '../others/Footer';
+import UserInsights from "../admincomponents/UserInsights";
 
 const AdminDashboard = () => {
 

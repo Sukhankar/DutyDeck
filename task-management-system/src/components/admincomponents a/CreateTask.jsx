@@ -32,18 +32,18 @@ const CreateTask = () => {
 
   const handleCreate = async (taskData) => {
     try {
-      const res = await API.post('/tasks', taskData);
-      setSuccess(res.data.message);
-      setError('');
-      setTitle('');
-      setDate('');
-      setDeadline('');
-      setAssignTo([]);
-      setCategory('');
-      setDescription('');
+        const res = await API.post('/tasks', taskData);
+        setSuccess(res.data.message);
+        setError('');
+        setTitle('');
+        setDate('');
+        setDeadline('');
+        setAssignTo([]);
+        setCategory('');
+        setDescription('');
     } catch (err) {
-      setError(err.response?.data?.message || err.message);
-      setSuccess('');
+        setError(err.response?.data?.message || err.message);
+        setSuccess('');
     }
   };
 
@@ -53,19 +53,19 @@ const CreateTask = () => {
     setSuccess('');
 
     if (!title || !date || !deadline || assignTo.length === 0 || !category || !description) {
-      setError('All fields are required.');
-      return;
+        setError('All fields are required.');
+        return;
     }
 
     // Keep assignTo as array of strings - backend will transform it
     const newTask = {
-      title,
-      date,
-      deadline,
-      assignTo, // This remains as array of emails
-      category,
-      description,
-      status: 'Pending',
+        title,
+        date,
+        deadline,
+        assignTo, // This remains as array of emails
+        category,
+        description,
+        status: 'Pending',
     };
 
     handleCreate(newTask);
@@ -73,7 +73,7 @@ const CreateTask = () => {
 
   const handleAssignChange = (email) => {
     setAssignTo((prev) =>
-      prev.includes(email) ? prev.filter((u) => u !== email) : [...prev, email]
+        prev.includes(email) ? prev.filter((u) => u !== email) : [...prev, email]
     );
   };
 
@@ -88,7 +88,7 @@ const CreateTask = () => {
     <div className="min-h-screen bg-gray-100">
       <div className="mt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Admin Dashboard</h2>
-        <p className="text-gray-6 00 mb-8">Welcome to the admin dashboard. Here you can manage users, view reports, and assign tasks.</p>
+        <p className="text-gray-600 mb-8">Welcome to the admin dashboard. Here you can manage users, view reports, and assign tasks.</p>
         <div className="bg-white rounded-xl shadow-lg p-6 max-w-3xl mx-auto">
           <h2 className="text-xl font-semibold text-blue-700 mb-4">Create Task</h2>
           <form className="flex flex-col gap-6 md:flex-row" onSubmit={handleSubmit}>
@@ -107,7 +107,7 @@ const CreateTask = () => {
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex-1">
-                  <label className="block text-gray-7 00 font-medium mb-1">Start Date</label>
+                  <label className="block text-gray-700 font-medium mb-1">Start Date</label>
                   <input
                     type="date"
                     className="w-full text-black outline-none border-2 border-gray-200 focus:border-blue-400 text-base py-2 px-4 rounded-md transition"

@@ -2,7 +2,7 @@ import User from '../models/userModel.js';
 
 export const getAllEmployees = async (req, res) => {
   try {
-    const employees = await User.find({ role: 'user' }).select("name email");
+    const employees = await User.find({ role: 'user' }).select("name email organization");
     res.status(200).json(employees);
   } catch (error) {
     console.error("Error fetching employees:", error.message);
