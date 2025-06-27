@@ -8,6 +8,7 @@ import LandingPage from "../src/components/landing/landingpage";
 import AllTaskPreview from "../src/components/admincomponents/AllTaskPreview";
 import TaskListPreview from "../src/components/usercomponents/TaskListPreview";
 import UserTaskList from "../src/components/admincomponents/UserTaskList";
+import ForgotPassword from "../src/components/Auth/ForgotPassword";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="/all-tasks-preview" element={<AllTaskPreview />} />
         <Route path="/task-list-preview" element={<TaskListPreview />} />
         <Route path="/user-tasks" element={<UserTaskList />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
     </BrowserRouter>
   );

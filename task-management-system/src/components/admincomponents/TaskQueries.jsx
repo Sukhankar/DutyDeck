@@ -50,30 +50,30 @@ const TaskQueries = ({ task, onTaskUpdate }) => {
   };
 
   return (
-    <div className="border-t pt-4 mt-4">
+    <div className="border-t pt-4 mt-4 w-full md:w-4/5 lg:w-2/3 mx-auto">
       <h4 className="text-lg font-bold text-gray-800 mb-2">Task Queries</h4>
       <form onSubmit={handleAddQuery}>
         <textarea 
           name="query" 
-          className="w-full p-2 border rounded text-sm mb-2" 
+          className="w-full p-2 border rounded text-sm mb-2 min-h-[100px] md:min-h-[120px]" 
           placeholder="Type a query..."
           aria-label="Query input"
         />
         {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
         <button 
           type="submit"
-          className="bg-blue-600 text-white px-3 py-1 text-sm rounded hover:bg-blue-700 transition-colors"
+          className="bg-blue-600 text-white px-3 py-1 text-sm rounded hover:bg-blue-700 transition-colors w-full md:w-auto"
         >
           Add Query
         </button>
       </form>
 
-      <ul className="mt-4 space-y-2 max-h-48 overflow-y-auto">
+      <ul className="mt-4 space-y-2 h-[200px] md:h-[300px] overflow-y-auto px-2">
         {queries.map(q => (
           <li key={q.id} className="bg-white p-3 rounded-lg shadow-sm hover:shadow-md">
             <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm text-gray-800">{q.message}</p>
+              <div className="w-[90%]">
+                <p className="text-sm text-gray-800 break-words">{q.message}</p>
                 <small className="text-xs text-gray-500">
                   {q.user} • {formatDistanceToNow(new Date(q.createdAt), { addSuffix: true })}
                 </small>

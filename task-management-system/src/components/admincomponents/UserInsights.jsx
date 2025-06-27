@@ -36,38 +36,36 @@ const UserInsights = () => {
   if (error) return <div className="p-6 text-red-600">Error: {error}</div>;
 
   return (
-    <div className="p-6 bg-white shadow rounded-xl max-w-6xl mx-auto my-10">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">User Task Insights</h2>
+    <div className="p-4 sm:p-6 bg-white shadow rounded-xl w-full mx-auto my-4 sm:my-10">
+      <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">User Task Insights</h2>
       <div className="overflow-x-auto">
-        <table className="min-w-full text-left border">
+        <table className="min-w-full text-sm sm:text-base">
           <thead>
             <tr className="bg-gray-100 text-gray-800">
-              <th className="py-2 px-4 border">Name</th>
-              <th className="py-2 px-4 border">Email</th>
-              <th className="py-2 px-4 border">Total</th>
-              <th className="py-2 px-4 border">Completed</th>
-              <th className="py-2 px-4 border">In Progress</th>
-              <th className="py-2 px-4 border">Failed</th>
+              <th className="py-2 px-2 sm:px-4 border">Name</th>
+              <th className="py-2 px-2 sm:px-4 border hidden sm:table-cell">Email</th>
+              <th className="py-2 px-2 sm:px-4 border">Total</th>
+              <th className="py-2 px-2 sm:px-4 border">Done</th>
+              <th className="py-2 px-2 sm:px-4 border">In Prog</th>
+              <th className="py-2 px-2 sm:px-4 border">Failed</th>
             </tr>
           </thead>
           <tbody>
             {insights.length > 0 ? (
               insights.map((user, idx) => (
                 <tr key={idx} className="hover:bg-gray-50 transition">
-                  <td className="py-2 px-4 border">{user.name}</td>
-                  <td className="py-2 px-4 border">{user.email}</td>
-                  <td className="py-2 px-4 border">
-                    {user.total}
-                  </td>
-                  <td className="py-2 px-4 border text-green-600 cursor-pointer underline"
+                  <td className="py-2 px-2 sm:px-4 border">{user.name}</td>
+                  <td className="py-2 px-2 sm:px-4 border hidden sm:table-cell">{user.email}</td>
+                  <td className="py-2 px-2 sm:px-4 border">{user.total}</td>
+                  <td className="py-2 px-2 sm:px-4 border text-green-600 cursor-pointer underline"
                       onClick={() => handleStatusClick(user.email, 'Completed')}>
                     {user.completed}
                   </td>
-                  <td className="py-2 px-4 border text-blue-600 cursor-pointer underline"
+                  <td className="py-2 px-2 sm:px-4 border text-blue-600 cursor-pointer underline"
                       onClick={() => handleStatusClick(user.email, 'In Progress')}>
                     {user.inProgress}
                   </td>
-                  <td className="py-2 px-4 border text-red-600 cursor-pointer underline"
+                  <td className="py-2 px-2 sm:px-4 border text-red-600 cursor-pointer underline"
                       onClick={() => handleStatusClick(user.email, 'Failed')}>
                     {user.failed}
                   </td>

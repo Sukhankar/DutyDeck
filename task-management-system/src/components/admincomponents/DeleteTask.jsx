@@ -17,7 +17,10 @@ const DeleteTask = ({ taskId, onClose, onTaskUpdate }) => {
   return (
     <button
       onClick={handleDelete}
-      className="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded w-full"
+      className="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded w-full
+                sm:w-auto sm:px-6 sm:py-3
+                md:text-lg
+                lg:hover:scale-105 lg:transition-transform"
     >
       🗑️ Delete Task
     </button>
