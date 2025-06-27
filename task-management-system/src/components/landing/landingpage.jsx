@@ -7,7 +7,7 @@ export default function LandingPage() {
       <header className="w-full py-6 px-4 flex justify-between items-center max-w-7xl mx-auto">
         <div className="flex items-center gap-3">
           <FaUsers className="text-blue-400 text-3xl drop-shadow" />
-          <span className="text-2xl font-bold text-blue-200 tracking-tight">Employer TaskMS</span>
+          <span className="text-2xl font-bold text-blue-200 tracking-tight">DutyDeck</span>
         </div>
         <nav className="flex gap-6">
           <a href="/login" className="text-blue-200 hover:text-white font-semibold transition">Login</a>

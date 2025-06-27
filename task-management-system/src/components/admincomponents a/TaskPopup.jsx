@@ -2,6 +2,8 @@ import React from 'react';
 import { formatDistanceToNow } from 'date-fns';
 
 const TaskPopup = ({ task, user, onClose, onDeleteQuery, onAddQuery }) => {
+  const hasManyAssignees = task.assignedUsers.length > 5;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative animate-pop">
@@ -18,7 +20,7 @@ const TaskPopup = ({ task, user, onClose, onDeleteQuery, onAddQuery }) => {
         </div>
         <div className="mb-3">
           <h4 className="font-semibold text-gray-800">Assignees</h4>
-          <ul className="list-disc list-inside text-sm text-gray-700">
+          <ul className={`list-disc list-inside text-sm text-gray-700 ${hasManyAssignees ? 'max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100' : ''}`}>
             {task.assignedUsers.map((user, idx) => (
               <li key={idx}>
                 {user.email} - 
