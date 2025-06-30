@@ -6,6 +6,7 @@ const EditTask = ({ task, onClose, onTaskUpdate }) => {
   const [orgFilter, setOrgFilter] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [showAssignPopup, setShowAssignPopup] = useState(false);
+
   const [form, setForm] = useState({
     title: task.title,
     description: task.description,
@@ -39,8 +40,8 @@ const EditTask = ({ task, onClose, onTaskUpdate }) => {
   const getFilteredEmployees = () => {
     return employees.filter(emp => {
       const matchesOrg = !orgFilter || emp.organization === orgFilter;
-      const matchesSearch = emp.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         emp.email.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        emp.email.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesOrg && matchesSearch;
     });
   };
@@ -83,11 +84,41 @@ const EditTask = ({ task, onClose, onTaskUpdate }) => {
 
   return (
     <form onSubmit={handleUpdate} className="space-y-3">
-      <input name="title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Title" className="w-full p-2 border rounded" />
-      <textarea name="description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Description" className="w-full p-2 border rounded" />
-      <input name="category" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="Category" className="w-full p-2 border rounded" />
-      <input name="date" type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="w-full p-2 border rounded" />
-      <input name="deadline" type="date" value={form.deadline} onChange={(e) => setForm({ ...form, deadline: e.target.value })} className="w-full p-2 border rounded" />
+      <input
+        name="title"
+        value={form.title}
+        onChange={(e) => setForm({ ...form, title: e.target.value })}
+        placeholder="Title"
+        className="w-full p-2 border rounded"
+      />
+      <textarea
+        name="description"
+        value={form.description}
+        onChange={(e) => setForm({ ...form, description: e.target.value })}
+        placeholder="Description"
+        className="w-full p-2 border rounded"
+      />
+      <input
+        name="category"
+        value={form.category}
+        onChange={(e) => setForm({ ...form, category: e.target.value })}
+        placeholder="Category"
+        className="w-full p-2 border rounded"
+      />
+      <input
+        name="date"
+        type="date"
+        value={form.date}
+        onChange={(e) => setForm({ ...form, date: e.target.value })}
+        className="w-full p-2 border rounded"
+      />
+      <input
+        name="deadline"
+        type="date"
+        value={form.deadline}
+        onChange={(e) => setForm({ ...form, deadline: e.target.value })}
+        className="w-full p-2 border rounded"
+      />
 
       <div>
         <label className="block font-medium text-gray-700 mb-1">Assign To:</label>
@@ -105,8 +136,9 @@ const EditTask = ({ task, onClose, onTaskUpdate }) => {
         <button type="button" onClick={onClose} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Close</button>
       </div>
 
+      {/* Assign Popup */}
       {showAssignPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.15)" }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm">
           <div
             className="bg-white rounded-xl p-4 sm:p-6 md:p-8 w-full max-h-[90vh] overflow-y-auto shadow-2xl relative"
             style={{
@@ -118,13 +150,7 @@ const EditTask = ({ task, onClose, onTaskUpdate }) => {
           >
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg sm:text-xl font-bold text-gray-800">Select Employees</h3>
-              <button
-                className="text-gray-500 hover:text-red-600 text-2xl font-bold"
-                onClick={() => setShowAssignPopup(false)}
-                aria-label="Close"
-              >
-                &times;
-              </button>
+              {/* CLOSE ICON REMOVED HERE */}
             </div>
 
             <div className="mb-4">
@@ -199,3 +225,4 @@ const EditTask = ({ task, onClose, onTaskUpdate }) => {
 };
 
 export default EditTask;
+  
