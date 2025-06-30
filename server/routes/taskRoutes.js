@@ -10,7 +10,8 @@ import {
   updateTaskStatus,
   updateTask,
   deleteTask,
-  getUserTasks
+  getUserTasks,
+  getMentorUserInsights
 } from '../controllers/taskController.js';
 
 const router = express.Router();
@@ -32,6 +33,9 @@ router.get('/stats', getTaskStats); // ?email=user@example.com
 
 // 🔹 Admin insight panel - task completion status of all users
 router.get('/user-insights', getUserInsights);
+
+// 🔹 Mentor insight panel - task completion status of assigned users
+router.get('/mentor-user-insights', getMentorUserInsights);
 
 // 🔹 Update a specific user's task status (Pending, In Progress, Completed, Failed)
 router.patch('/:taskId/status', updateTaskStatus);

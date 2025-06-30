@@ -19,8 +19,14 @@ export default function Login() {
         role: res.data.role
       }));
       
-      if (res.data.role === "admin") navigate("/admin");
-      else navigate("/user");
+      // Redirect based on role
+      if (res.data.role === "admin") {
+        navigate("/admin");
+      } else if (res.data.role === "mentor") {
+        navigate("/mentor");
+      } else {
+        navigate("/user");
+      }
     } catch (err) {
       setError(err.response?.data?.error || "Something went wrong");
     }
