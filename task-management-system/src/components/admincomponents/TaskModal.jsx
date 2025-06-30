@@ -18,13 +18,7 @@ const TaskModal = ({ task, onClose, onTaskUpdate }) => {
         <div className={`w-full ${editMode ? 'md:w-1/2' : 'w-full'} p-4 sm:p-6 overflow-y-auto`}>
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-xl font-bold text-blue-800 drop-shadow">Task Details</h2>
-            <button
-              onClick={onClose}
-              className="text-blue-400 hover:text-red-600 text-2xl font-bold focus:outline-none transition"
-              aria-label="Close"
-            >
-              &times;
-            </button>
+
           </div>
 
           <TaskDetails task={task} onEditToggle={() => setEditMode(!editMode)} onClose={onClose} />
