@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import User from "../models/userModel.js";
+import User from "../models/User.js";
 import Task from "../models/Task.js";
 
 // ✅ Create Task
@@ -145,7 +145,6 @@ export const getTaskStats = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
 // ✅ Get User Insights
 export const getUserInsights = async (req, res) => {
   try {
@@ -191,6 +190,64 @@ export const getUserInsights = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+
+// GET /tasks/mentor-user-insights
+export const getMentorUserInsights = async (req, res) => {
+  try {
+    const mentorEmail = req.user.email;
+
+    const mentor = await User.findOne({ email: mentorEmail });
+    if (!mentor || mentor.role !== "mentor") {
+      return res.status(403).json({ message: "Only mentors can access this resource." });
+    }
+
+    const assignedEmails = mentor.assignedUsers;
+
+    // Get basic info of assigned users
+    const assignedUsers = await User.find({ email: { $in: assignedEmails } }).select("name email");
+
+    const insights = await Promise.all(assignedUsers.map(async (user) => {
+      const tasks = await Task.find({ "assignedUsers.email": user.email });
+
+      let completed = 0, inProgress = 0, failed = 0, seen = 0;
+
+      tasks.forEach(task => {
+        const entry = task.assignedUsers.find(u => u.email === user.email);
+        if (entry) {
+          if (entry.status === "Completed") completed++;
+          if (entry.status === "In Progress") inProgress++;
+          if (entry.status === "Failed") failed++;
+          if (entry.seen) seen++;
+        }
+      });
+
+      return {
+        name: user.name,
+        email: user.email,
+        total: tasks.length,
+        completed,
+        inProgress,
+        failed,
+        seen,
+        lastSeen: tasks.reduce((latest, task) => {
+          const entry = task.assignedUsers.find(u => u.email === user.email);
+          return entry?.seenAt > latest ? entry.seenAt : latest;
+        }, null),
+        lastCompleted: tasks.reduce((latest, task) => {
+          const entry = task.assignedUsers.find(u => u.email === user.email);
+          return entry?.completedAt > latest ? entry.completedAt : latest;
+        }, null)
+      };
+    }));
+
+    res.status(200).json(insights);
+  } catch (err) {
+    console.error("Error fetching mentor user insights:", err.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 
 // ✅ Update Task Status (Per User)
 export const updateTaskStatus = async (req, res) => {
