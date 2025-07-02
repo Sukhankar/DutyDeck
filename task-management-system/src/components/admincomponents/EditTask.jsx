@@ -121,7 +121,7 @@ const EditTask = ({ task, onClose, onTaskUpdate }) => {
       />
 
       <div>
-        <label className="block font-medium text-gray-700 mb-1">Assign To:</label>
+        <label className="block font-medium text-gray-7 00 mb-1">Assign To:</label>
         <button
           type="button"
           className="w-full bg-white border-2 border-gray-200 text-black rounded-md py-2 px-4 transition hover:bg-blue-50"
@@ -150,7 +150,13 @@ const EditTask = ({ task, onClose, onTaskUpdate }) => {
           >
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg sm:text-xl font-bold text-gray-800">Select Employees</h3>
-              {/* CLOSE ICON REMOVED HERE */}
+              <button
+                onClick={() => setShowAssignPopup(false)}
+                className="text-gray-500 hover:text-red-600 text-xl sm:text-2xl font-bold"
+                aria-label="Close"
+              >
+                &times;
+              </button>
             </div>
 
             <div className="mb-4">
@@ -225,4 +231,3 @@ const EditTask = ({ task, onClose, onTaskUpdate }) => {
 };
 
 export default EditTask;
-  
