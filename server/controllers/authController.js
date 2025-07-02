@@ -28,63 +28,165 @@ const sendWelcomeEmail = async (email, name) => {
   }
 };
 
+// Common OTP sending function
+const sendRegistrationOtp = async (email, role) => {
+  const existingUser = await User.findOne({ email });
+  if (existingUser && existingUser.role !== 'temp') {
+    throw new Error("Email already in use.");
+  }
+
+  const otp = generateOTP();
+  const tempUser = await User.findOneAndUpdate(
+    { email },
+    {
+      email,
+      resetPasswordOTP: otp,
+      resetPasswordExpires: Date.now() + 10 * 60 * 1000, // 10 minutes
+      name: "temp",
+      password: "temp",
+      organization: "temp",
+      role: "temp"
+    },
+    { upsert: true, new: true }
+  );
+
+  const mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: 'Verify your email',
+    html: `<h3>Your OTP is <b>${otp}</b>. It will expire in 10 minutes.</h3>`
+  };
+
+  await transporter.sendMail(mailOptions);
+  return tempUser;
+};
+
+// Common OTP verification function
+const verifyRegistrationOtp = async (email, otp) => {
+  const user = await User.findOne({ email });
+
+  if (!user || user.role !== 'temp') {
+    throw new Error("User not found or already registered");
+  }
+
+  if (Date.now() > user.resetPasswordExpires) {
+    throw new Error("OTP expired. Please request a new one.");
+  }
+
+  if (user.resetPasswordOTP !== otp) {
+    throw new Error("Invalid OTP");
+  }
+
+  return user;
+};
+
+// Common registration function
+const completeRegistration = async (email, name, password, organization, role) => {
+  const user = await User.findOne({ email });
+  if (!user || user.role !== "temp") {
+    throw new Error("OTP verification required or already registered.");
+  }
+
+  user.name = name;
+  user.password = await bcrypt.hash(password, 10);
+  user.organization = organization;
+  user.role = role;
+  user.resetPasswordOTP = undefined;
+  user.resetPasswordExpires = undefined;
+  await user.save();
+
+  await sendWelcomeEmail(email, name);
+  return user;
+};
+
+// API Endpoints
+export const sendUserRegistrationOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    await sendRegistrationOtp(email, "user");
+    res.status(200).json({ message: "OTP sent to email." });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const verifyUserRegistrationOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    await verifyRegistrationOtp(email, otp);
+    res.status(200).json({ message: "OTP verified" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password, organization } = req.body;
-    const hashed = await bcrypt.hash(password, 10);
-    const user = await User.create({ 
-      name, 
-      email, 
-      password: hashed, 
-      organization,
-      role: "user" 
-    });
-    
-    await sendWelcomeEmail(email, name);
-    
-    res.status(201).json({ message: "User registered" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    await completeRegistration(email, name, password, organization, "user");
+    res.status(201).json({ message: "User registered successfully." });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const sendAdminRegistrationOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    await sendRegistrationOtp(email, "admin");
+    res.status(200).json({ message: "OTP sent to email." });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const verifyAdminRegistrationOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    await verifyRegistrationOtp(email, otp);
+    res.status(200).json({ message: "OTP verified" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };
 
 export const registerAdmin = async (req, res) => {
   try {
     const { name, email, password, organization } = req.body;
-    const hashed = await bcrypt.hash(password, 10);
-    const admin = await User.create({ 
-      name, 
-      email, 
-      password: hashed, 
-      organization,
-      role: "admin" 
-    });
-    
-    await sendWelcomeEmail(email, name);
-    
-    res.status(201).json({ message: "Admin registered" });
-  } catch (err) {
-    res.status(500). json({ error: err.message });
+    await completeRegistration(email, name, password, organization, "admin");
+    res.status(201).json({ message: "Admin registered successfully." });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const sendMentorRegistrationOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    await sendRegistrationOtp(email, "mentor");
+    res.status(200).json({ message: "OTP sent to email." });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const verifyMentorRegistrationOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    await verifyRegistrationOtp(email, otp);
+    res.status(200).json({ message: "OTP verified" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };
 
 export const registerMentor = async (req, res) => {
   try {
     const { name, email, password, organization } = req.body;
-    const hashed = await bcrypt.hash(password, 10);
-    const mentor = await User.create({ 
-      name, 
-      email, 
-      password: hashed, 
-      organization,
-      role: "mentor" 
-    });
-    
-    await sendWelcomeEmail(email, name);
-    
-    res.status(201).json({ message: "Mentor registered" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    await completeRegistration(email, name, password, organization, "mentor");
+    res.status(201).json({ message: "Mentor registered successfully." });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };
 

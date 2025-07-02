@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../../api';
+import { Power } from 'lucide-react';
 
 const Header = ({ onLogout }) => {
   const navigate = useNavigate();
@@ -36,23 +37,32 @@ const Header = ({ onLogout }) => {
     navigate('/');
   };
 
+  // Get first letter of username or email
+  const displayInitial = (userName || loggedInEmail.split('@')[0]).charAt(0).toUpperCase();
+
   return (
-    <header className="flex items-center justify-between bg-gray-900 text-white px-6 py-4 shadow-md rounded-b-xl">
-      <div>
-        <h1 className="text-lg sm:text-2xl font-medium leading-tight">
-          Hello,
-          <br />
-          <span className="text-2xl sm:text-3xl font-bold text-blue-300 flex items-center gap-2">
-            {userName || loggedInEmail.split('@')[0]} <span role="img" aria-label="wave">👋</span>
-          </span>
-        </h1>
+    <header className="w-full bg-white/90 backdrop-blur-lg border-b border-gray-200/80 py-4 px-6 sm:px-8 rounded-lg shadow-lg">
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-md">
+            <span className="text-white text-xl font-bold">{displayInitial}</span>
+          </div>
+          <div>
+            <h1 className="text-sm text-gray-500 font-medium">Welcome back,</h1>
+            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              {userName || loggedInEmail.split('@')[0]}
+              <span className="text-blue-500" role="img" aria-label="wave">👋</span>
+            </h2>
+          </div>
+        </div>
+        <button
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-50 rounded-lg transition-colors shadow-sm hover:shadow-md"
+          onClick={handleLogoutClick}
+        >
+          <Power className="w-4 h-4" />
+          Log out
+        </button>
       </div>
-      <button
-        className="bg-red-500 hover:bg-red-600 transition text-white text-base sm:text-lg font-semibold px-4 sm:px-6 py-2 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-red-300"
-        onClick={handleLogoutClick}
-      >
-        Log out
-      </button>
     </header>
   );
 };

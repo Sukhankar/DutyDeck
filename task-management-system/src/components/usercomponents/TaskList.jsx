@@ -8,6 +8,7 @@ const cardColors = [
   "bg-pink-200", "bg-purple-200", "bg-orange-200",
   "bg-teal-200", "bg-indigo-200"
 ]
+
 const statusColorMap = {
   "Pending": "bg-red-600",
   "In Progress": "bg-blue-600",
@@ -81,6 +82,7 @@ const TaskList = () => {
           <div className="col-span-full text-center text-gray-500 py-10">No tasks found.</div>
         ) : cardTasks.map((task, idx) => {
           const isDeadlinePassed = task.deadline && new Date(task.deadline) < new Date()
+          const isTaskDisabled = task.userStatus === "Failed" || (isDeadlinePassed && task.userStatus !== "Completed")
           return (
             <div key={task._id} onClick={() => setSelectedTask(task)}
               className={`relative w-full cursor-pointer shadow-xl rounded-2xl transition-all duration-300 ${task.color}
@@ -98,7 +100,7 @@ const TaskList = () => {
               </div>
               <div className="px-6 pb-6">
                 <h2 className="mt-4 text-xl font-bold text-gray-800">{task.title}</h2>
-                <p className="text-sm text-gray-600 mt-2">{task.description}</p>
+                <p className="text-sm text-gray-6 00 mt-2">{task.description}</p>
                 {task.deadline && (
                   <div className="mt-2">
                     <p className="text-sm text-gray-700">
@@ -110,11 +112,15 @@ const TaskList = () => {
                   </div>
                 )}
                 <button
-                  className="mt-2 bg-white text-gray-900 font-medium text-xs px-3 py-1 rounded shadow hover:bg-gray-100"
+                  className={`mt-2 bg-white text-gray-900 font-medium text-xs px-3 py-1 rounded shadow ${
+                    isTaskDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'
+                  }`}
                   onClick={(e) => {
+                    if (isTaskDisabled) return
                     e.stopPropagation()
                     handleStatusCycle(task)
                   }}
+                  disabled={isTaskDisabled}
                 >
                   Mark as {task.userStatus === "Pending" ? "In Progress" : task.userStatus === "In Progress" ? "Completed" : "Pending"}
                 </button>
@@ -132,11 +138,11 @@ const TaskList = () => {
         )}
       </div>
 
-      {/* Query Modal */}
+      {/* Query Modal with glassy background */}
       {selectedTask && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-md">
           <div className={`relative w-full max-w-md mx-auto rounded-2xl shadow-2xl ${selectedTask.color} p-8 animate-pop`}>
-            <button onClick={() => setSelectedTask(null)} className="absolute top-3 right-3 text-xl font-bold text-gray-700 hover:text-red-600">&times;</button>
+            <button onClick={() => setSelectedTask(null)} className="absolute top-3 right-3 text-xl font-bold text-gray-7 00 hover:text-red-600">&times;</button>
             <div className="flex items-center gap-3 mb-4">
               <h3 className={`${selectedTask.statusColor} text-xs px-3 py-1 rounded text-white font-semibold shadow`}>
                 {selectedTask.userStatus}
