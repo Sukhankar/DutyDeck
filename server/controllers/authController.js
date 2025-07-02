@@ -107,6 +107,11 @@ export const login = async (req, res) => {
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -130,17 +135,30 @@ export const forgotPassword = async (req, res) => {
       `
     };
 
-    await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: "OTP sent to email" });
+    try {
+      await transporter.sendMail(mailOptions);
+      return res.status(200).json({ message: "OTP sent to email" });
+    } catch (emailError) {
+      console.error("Error sending email:", emailError);
+      return res.status(500).json({ message: "Failed to send OTP email" });
+    }
   } catch (error) {
     console.error("Error in forgotPassword:", error);
-    res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ 
+      message: "Internal server error",
+      error: error.message 
+    });
   }
 };
 
 export const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
+    
+    if (!email || !otp) {
+      return res.status(400).json({ message: "Email and OTP are required" });
+    }
+
     const user = await User.findOne({ email });
     
     if (!user) {
@@ -161,13 +179,21 @@ export const verifyOtp = async (req, res) => {
     res.status(200).json({ message: "OTP verified successfully" });
   } catch (error) {
     console.error("Error in verifyOtp:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ 
+      message: "Internal server error",
+      error: error.message 
+    });
   }
 };
 
 export const resetPassword = async (req, res) => {
   try {
     const { email, newPassword } = req.body;
+    
+    if (!email || !newPassword) {
+      return res.status(400).json({ message: "Email and new password are required" });
+    }
+
     const user = await User.findOne({ email });
     
     if (!user) {
@@ -183,6 +209,9 @@ export const resetPassword = async (req, res) => {
     res.status(200).json({ message: "Password reset successful" });
   } catch (error) {
     console.error("Error in resetPassword:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ 
+      message: "Internal server error",
+      error: error.message 
+    });
   }
 };
