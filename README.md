@@ -1,113 +1,80 @@
-# 📝 Task Management System
+# ✨ DutyDeck 
+### Task Management System - Empowering teams with seamless task tracking, collaboration, and deadline enforcement.
 
-A full-stack task management platform for administrators and employees to **track**, **manage**, and **collaborate** on assigned tasks with real-time user-specific status updates, insights, and automatic deadline-based validations.
+## 🚀 at a Glance
+Admin View: Create, assign, and manage tasks across employees. Monitor progress, deadlines, and comments in one place.
 
----
+Employee View: See assigned tasks, update status, ask questions, and get smart reminders if deadlines pass.
 
-## 🚀 Features
+Smart Intelligence: Deadline auto-failure, real-time UI sync, and individual progress tracking — even on shared tasks.
 
-### 👨‍💼 Admin Capabilities
-- Create and assign tasks to one or more employees
-- Set deadlines for each task
-- View all tasks with color-coded status badges
-- Monitor task progress (`Pending`, `In Progress`, `Completed`, `Failed`)
-- Delete or update existing tasks
-- Add and manage task-related queries (comments)
-- Visualize user-specific task insights with filtering by status
-- View overall task stats (new, completed, in progress, pending)
+## 📌 Key Features
+### 👨‍💼 Admin Dashboard
+Create tasks with deadlines and multi-employee assignments
 
-### 👷‍♀️ Employee Capabilities
-- Login and view only assigned tasks
-- Update personal task status (`In Progress`, `Completed`)
-- View task queries or raise new ones
-- Tasks automatically marked as `Failed` if deadline passes without completion
-- View own task breakdowns by status (Completed, Pending, etc.)
+Monitor statuses: Pending, In Progress, Completed, Failed
 
----
+Add comments/queries and manage or delete tasks
+
+Visualize stats and insights per user or status
+
+### 👷‍♀️ Employee Portal
+Secure login using JWT
+
+View and update only your tasks
+
+Raise/view comments for clarification
+
+Tasks auto-flagged Failed if past deadline
+
+### 🧠 System Highlights
+Deadline Enforcement: Auto-mark tasks as failed when overdue
+
+Individual Status: Track each employee’s progress separately
+
+Real-Time Sync: Live updates for tasks, stats, and comments
 
 ## 🛠️ Tech Stack
+Layer	Technologies
+Frontend	React.js • Tailwind CSS • Axios • React Router
+Backend	Node.js • Express.js • MongoDB/Mongoose • JWT Auth
 
-### Frontend
-- React.js
-- Tailwind CSS
-- Axios
-- React Router DOM
-
-### Backend
-- Node.js
-- Express.js
-- MongoDB + Mongoose
-- JWT-based Authentication
-
----
-
-## 📊 User Insights & Filtering
-
-- Each user’s task is tracked **independently** with their own status (`Pending`, `In Progress`, `Completed`, `Failed`)
-- Admin can click on a user’s:
-  - `Completed`, `In Progress`, `Failed`, or `Seen` stats
-  - And view all tasks for that user filtered by the selected status
-
----
-
-## 🧠 Smart Features
-
-- **⏰ Deadline Enforcement:** Automatically marks tasks as `Failed` if the deadline is missed
-- **👥 Individual User Status:** Users assigned to the same task can have different progress statuses
-- **🔁 Real-time UI Sync:** Stats, insights, and lists update dynamically on task changes
-
----
-
-## 🧪 Installation
-
-### Clone the Repository
-
+## 📥 Installation
+Clone the repo and get started:
 ```bash
-git clone https://github.com/your-username/task-management-system.git
-cd task-management-system
-````
+git clone https://github.com/Sukhankar/DutyDeck.git
+cd DutyDeck
+```
 
-### Backend Setup
-
+## Start Backend
 ```bash
 cd server
-npm install
-npm run dev
+npm install && npm run dev
 ```
 
-### Frontend Setup
-
+## Start Frontend
 ```bash
 cd client
-npm install
-npm run dev
+npm install && npm run dev
 ```
+🔐 Authentication & Access
+JWT-based, role-specific access (Admin vs Employee)
 
----
+All API endpoints protected with secure middleware
 
-## 🔐 Authentication
+Token safely stored on the client side
 
-* Role-based access: `admin` vs `employee`
-* JWT securely stored in localStorage
-* All API endpoints protected by middleware
+## 🛠️ Future Plans
+📬 Notifications via email/SMS on new/urgent tasks
 
----
+📎 Attachments: Allow file uploads with tasks
 
-## ✅ Future Improvements
+📊 Advanced dashboard: Analytics for admins
 
-* Email/SMS notifications on task assignment or approaching deadline
-* File attachments with tasks
-* Analytics dashboard for admin
-* Export task reports as CSV or PDF
-
----
+📤 Export: CSV/PDF reporting for tasks
 
 ## 📄 License
+Licensed under the [MIT License](LICENSE).
 
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-## 👨‍💻 Author
-
-Made with ❤️ by Subhan and sukhankar (https://github.com/SubhanKhalif)
+## 👨‍💻 Maintainers
+Built with ❤️ by [Sukhankar](https://github.com/Sukhankar) and [Subhan](https://github.com/SubhanKhalif)
