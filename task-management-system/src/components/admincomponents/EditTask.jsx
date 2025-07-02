@@ -151,6 +151,7 @@ const EditTask = ({ task, onClose, onTaskUpdate }) => {
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg sm:text-xl font-bold text-gray-800">Select Employees</h3>
               {/* CLOSE ICON REMOVED HERE */}
+              
             </div>
 
             <div className="mb-4">
