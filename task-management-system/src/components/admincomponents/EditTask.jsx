@@ -60,13 +60,17 @@ const EditTask = ({ task, onClose, onTaskUpdate }) => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const assignedUsers = form.assignedUsers.map(email => ({
-        email,
-        status: 'Pending',
-        seen: false,
-        seenAt: null,
-        completedAt: null
-      }));
+      const assignedUsers = form.assignedUsers.map(email => {
+        // Find existing user status if it exists
+        const existingUser = task.assignedUsers?.find(u => u.email === email);
+        return {
+          email,
+          status: existingUser?.status || 'Pending',
+          seen: existingUser?.seen || false,
+          seenAt: existingUser?.seenAt || null,
+          completedAt: existingUser?.completedAt || null
+        };
+      });
 
       const payload = {
         ...form,
