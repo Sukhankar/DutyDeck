@@ -190,8 +190,6 @@ export const getUserInsights = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
-
 // GET /tasks/mentor-user-insights
 export const getMentorUserInsights = async (req, res) => {
   try {
@@ -248,7 +246,6 @@ export const getMentorUserInsights = async (req, res) => {
   }
 };
 
-
 // ✅ Update Task Status (Per User)
 export const updateTaskStatus = async (req, res) => {
   try {
@@ -293,15 +290,42 @@ export const updateTask = async (req, res) => {
     const { taskId } = req.params;
     const updateData = req.body;
 
+    // Get current task to preserve user statuses
+    const currentTask = await Task.findById(taskId);
+    if (!currentTask) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    // Create a map of existing user statuses
+    const userStatusMap = new Map();
+    currentTask.assignedUsers.forEach(user => {
+      userStatusMap.set(user.email, {
+        status: user.status,
+        seen: user.seen,
+        seenAt: user.seenAt,
+        completedAt: user.completedAt
+      });
+    });
+
     // Convert `assignTo` to `assignedUsers` if present
     if (Array.isArray(updateData.assignTo)) {
-      updateData.assignedUsers = updateData.assignTo.map(email => ({
-        email,
-        status: 'Pending',
-        seen: false,
-        seenAt: null,
-        completedAt: null
-      }));
+      updateData.assignedUsers = updateData.assignTo.map(email => {
+        // Preserve existing status if user was already assigned
+        if (userStatusMap.has(email)) {
+          return {
+            email,
+            ...userStatusMap.get(email)
+          };
+        }
+        // New user gets default status
+        return {
+          email,
+          status: 'Pending',
+          seen: false,
+          seenAt: null,
+          completedAt: null
+        };
+      });
       delete updateData.assignTo;
     }
 
