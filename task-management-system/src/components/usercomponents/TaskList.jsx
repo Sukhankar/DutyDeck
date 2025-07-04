@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import API from '../../api'
 import { formatDistanceToNow } from 'date-fns'
 import { useNavigate } from 'react-router-dom'
@@ -19,15 +19,23 @@ const statusColorMap = {
 const TaskList = () => {
   const [tasks, setTasks] = useState([])
   const [selectedTask, setSelectedTask] = useState(null)
+  const [loading, setLoading] = useState(false)
   const user = JSON.parse(localStorage.getItem("user"))
   const navigate = useNavigate()
+  const hasMountedOnce = useRef(false) // to track first mount
 
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
   useEffect(() => {
     const fetchTasks = async () => {
       if (!isValidEmail(user?.email)) return
+
+      if (!hasMountedOnce.current) {
+        setLoading(true)
+      }
+
       try {
+        await new Promise(resolve => setTimeout(resolve, 2000)) // simulate delay
         const res = await API.get(`/tasks/user?email=${user.email}`)
         const colored = res.data.map(task => {
           const userEntry = task.assignedUsers.find(u => u.email === user.email)
@@ -41,6 +49,11 @@ const TaskList = () => {
         setTasks(colored)
       } catch (err) {
         console.error("Failed to fetch tasks:", err.message)
+      } finally {
+        if (!hasMountedOnce.current) {
+          setLoading(false)
+          hasMountedOnce.current = true
+        }
       }
     }
 
@@ -75,10 +88,16 @@ const TaskList = () => {
 
   const cardTasks = tasks.slice(0, 8)
 
+  const SkeletonCard = () => (
+    <div className="relative w-full h-64 bg-gray-200 rounded-2xl shadow-xl animate-pulse sm:mt-0" />
+  )
+
   return (
     <>
       <div className="w-full mx-auto py-10 mt-10 flex flex-col items-center max-w-xs sm:max-w-2xl sm:grid sm:grid-cols-2 sm:gap-8 lg:max-w-4xl lg:grid-cols-3" style={{ minHeight: 500 }}>
-        {cardTasks.length === 0 ? (
+        {loading ? (
+          [...Array(6)].map((_, idx) => <SkeletonCard key={idx} />)
+        ) : cardTasks.length === 0 ? (
           <div className="col-span-full text-center text-gray-500 py-10">No tasks found.</div>
         ) : cardTasks.map((task, idx) => {
           const isDeadlinePassed = task.deadline && new Date(task.deadline) < new Date()
@@ -100,7 +119,7 @@ const TaskList = () => {
               </div>
               <div className="px-6 pb-6">
                 <h2 className="mt-4 text-xl font-bold text-gray-800">{task.title}</h2>
-                <p className="text-sm text-gray-6 00 mt-2">{task.description}</p>
+                <p className="text-sm text-gray-600 mt-2">{task.description}</p>
                 {task.deadline && (
                   <div className="mt-2">
                     <p className="text-sm text-gray-700">
@@ -129,7 +148,7 @@ const TaskList = () => {
           )
         })}
 
-        {tasks.length > 8 && (
+        {!loading && tasks.length > 8 && (
           <div className="bg-white rounded-xl shadow-lg p-5 border border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 transition"
             onClick={() => navigate('/task-list-preview')}>
             <h2 className="text-lg font-semibold text-blue-600">Show All</h2>
@@ -138,11 +157,11 @@ const TaskList = () => {
         )}
       </div>
 
-      {/* Query Modal with glassy background */}
+      {/* Query Modal */}
       {selectedTask && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-md">
           <div className={`relative w-full max-w-md mx-auto rounded-2xl shadow-2xl ${selectedTask.color} p-8 animate-pop`}>
-            <button onClick={() => setSelectedTask(null)} className="absolute top-3 right-3 text-xl font-bold text-gray-7 00 hover:text-red-600">&times;</button>
+            <button onClick={() => setSelectedTask(null)} className="absolute top-3 right-3 text-xl font-bold text-gray-700 hover:text-red-600">&times;</button>
             <div className="flex items-center gap-3 mb-4">
               <h3 className={`${selectedTask.statusColor} text-xs px-3 py-1 rounded text-white font-semibold shadow`}>
                 {selectedTask.userStatus}
