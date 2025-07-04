@@ -8,6 +8,7 @@ const cardColors = [
   "bg-pink-200", "bg-purple-200", "bg-orange-200",
   "bg-teal-200", "bg-indigo-200"
 ]
+
 const statusColorMap = {
   "Pending": "bg-red-600",
   "In Progress": "bg-blue-600",
@@ -132,9 +133,9 @@ const TaskList = () => {
         )}
       </div>
 
-      {/* Query Modal */}
+      {/* Query Modal with glassy background */}
       {selectedTask && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-md">
           <div className={`relative w-full max-w-md mx-auto rounded-2xl shadow-2xl ${selectedTask.color} p-8 animate-pop`}>
             <button onClick={() => setSelectedTask(null)} className="absolute top-3 right-3 text-xl font-bold text-gray-700 hover:text-red-600">&times;</button>
             <div className="flex items-center gap-3 mb-4">

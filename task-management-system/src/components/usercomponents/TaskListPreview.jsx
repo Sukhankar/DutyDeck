@@ -54,7 +54,7 @@ const TaskList = () => {
     }[currentStatus] || "Pending"
 
     try {
-      const res = await API.patch(`/tasks/${taskId}/status`, {
+      await API.patch(`/tasks/${taskId}/status`, {
         email: user.email,
         status: nextStatus
       })

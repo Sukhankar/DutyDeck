@@ -13,7 +13,7 @@ dist-ssr
 *.local
 
 # Environment files
-server/.env
+*.env
 task-management-system/.env
 employer-management/.env
 employer-management-backend/.env
