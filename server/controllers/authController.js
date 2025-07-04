@@ -28,63 +28,165 @@ const sendWelcomeEmail = async (email, name) => {
   }
 };
 
+// Common OTP sending function
+const sendRegistrationOtp = async (email, role) => {
+  const existingUser = await User.findOne({ email });
+  if (existingUser && existingUser.role !== 'temp') {
+    throw new Error("Email already in use.");
+  }
+
+  const otp = generateOTP();
+  const tempUser = await User.findOneAndUpdate(
+    { email },
+    {
+      email,
+      resetPasswordOTP: otp,
+      resetPasswordExpires: Date.now() + 10 * 60 * 1000, // 10 minutes
+      name: "temp",
+      password: "temp",
+      organization: "temp",
+      role: "temp"
+    },
+    { upsert: true, new: true }
+  );
+
+  const mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: 'Verify your email',
+    html: `<h3>Your OTP is <b>${otp}</b>. It will expire in 10 minutes.</h3>`
+  };
+
+  await transporter.sendMail(mailOptions);
+  return tempUser;
+};
+
+// Common OTP verification function
+const verifyRegistrationOtp = async (email, otp) => {
+  const user = await User.findOne({ email });
+
+  if (!user || user.role !== 'temp') {
+    throw new Error("User not found or already registered");
+  }
+
+  if (Date.now() > user.resetPasswordExpires) {
+    throw new Error("OTP expired. Please request a new one.");
+  }
+
+  if (user.resetPasswordOTP !== otp) {
+    throw new Error("Invalid OTP");
+  }
+
+  return user;
+};
+
+// Common registration function
+const completeRegistration = async (email, name, password, organization, role) => {
+  const user = await User.findOne({ email });
+  if (!user || user.role !== "temp") {
+    throw new Error("OTP verification required or already registered.");
+  }
+
+  user.name = name;
+  user.password = await bcrypt.hash(password, 10);
+  user.organization = organization;
+  user.role = role;
+  user.resetPasswordOTP = undefined;
+  user.resetPasswordExpires = undefined;
+  await user.save();
+
+  await sendWelcomeEmail(email, name);
+  return user;
+};
+
+// API Endpoints
+export const sendUserRegistrationOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    await sendRegistrationOtp(email, "user");
+    res.status(200).json({ message: "OTP sent to email." });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const verifyUserRegistrationOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    await verifyRegistrationOtp(email, otp);
+    res.status(200).json({ message: "OTP verified" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password, organization } = req.body;
-    const hashed = await bcrypt.hash(password, 10);
-    const user = await User.create({ 
-      name, 
-      email, 
-      password: hashed, 
-      organization,
-      role: "user" 
-    });
-    
-    await sendWelcomeEmail(email, name);
-    
-    res.status(201).json({ message: "User registered" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    await completeRegistration(email, name, password, organization, "user");
+    res.status(201).json({ message: "User registered successfully." });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const sendAdminRegistrationOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    await sendRegistrationOtp(email, "admin");
+    res.status(200).json({ message: "OTP sent to email." });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const verifyAdminRegistrationOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    await verifyRegistrationOtp(email, otp);
+    res.status(200).json({ message: "OTP verified" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };
 
 export const registerAdmin = async (req, res) => {
   try {
     const { name, email, password, organization } = req.body;
-    const hashed = await bcrypt.hash(password, 10);
-    const admin = await User.create({ 
-      name, 
-      email, 
-      password: hashed, 
-      organization,
-      role: "admin" 
-    });
-    
-    await sendWelcomeEmail(email, name);
-    
-    res.status(201).json({ message: "Admin registered" });
-  } catch (err) {
-    res.status(500). json({ error: err.message });
+    await completeRegistration(email, name, password, organization, "admin");
+    res.status(201).json({ message: "Admin registered successfully." });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const sendMentorRegistrationOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    await sendRegistrationOtp(email, "mentor");
+    res.status(200).json({ message: "OTP sent to email." });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const verifyMentorRegistrationOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    await verifyRegistrationOtp(email, otp);
+    res.status(200).json({ message: "OTP verified" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };
 
 export const registerMentor = async (req, res) => {
   try {
     const { name, email, password, organization } = req.body;
-    const hashed = await bcrypt.hash(password, 10);
-    const mentor = await User.create({ 
-      name, 
-      email, 
-      password: hashed, 
-      organization,
-      role: "mentor" 
-    });
-    
-    await sendWelcomeEmail(email, name);
-    
-    res.status(201).json({ message: "Mentor registered" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    await completeRegistration(email, name, password, organization, "mentor");
+    res.status(201).json({ message: "Mentor registered successfully." });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };
 
@@ -107,6 +209,11 @@ export const login = async (req, res) => {
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -130,17 +237,30 @@ export const forgotPassword = async (req, res) => {
       `
     };
 
-    await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: "OTP sent to email" });
+    try {
+      await transporter.sendMail(mailOptions);
+      return res.status(200).json({ message: "OTP sent to email" });
+    } catch (emailError) {
+      console.error("Error sending email:", emailError);
+      return res.status(500).json({ message: "Failed to send OTP email" });
+    }
   } catch (error) {
     console.error("Error in forgotPassword:", error);
-    res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ 
+      message: "Internal server error",
+      error: error.message 
+    });
   }
 };
 
 export const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
+    
+    if (!email || !otp) {
+      return res.status(400).json({ message: "Email and OTP are required" });
+    }
+
     const user = await User.findOne({ email });
     
     if (!user) {
@@ -161,13 +281,21 @@ export const verifyOtp = async (req, res) => {
     res.status(200).json({ message: "OTP verified successfully" });
   } catch (error) {
     console.error("Error in verifyOtp:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ 
+      message: "Internal server error",
+      error: error.message 
+    });
   }
 };
 
 export const resetPassword = async (req, res) => {
   try {
     const { email, newPassword } = req.body;
+    
+    if (!email || !newPassword) {
+      return res.status(400).json({ message: "Email and new password are required" });
+    }
+
     const user = await User.findOne({ email });
     
     if (!user) {
@@ -183,6 +311,9 @@ export const resetPassword = async (req, res) => {
     res.status(200).json({ message: "Password reset successful" });
   } catch (error) {
     console.error("Error in resetPassword:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ 
+      message: "Internal server error",
+      error: error.message 
+    });
   }
 };
